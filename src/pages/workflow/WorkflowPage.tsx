@@ -66,7 +66,11 @@ export default function WorkflowPage() {
       <PageHeader title="Workflow" subtitle={titles[tab]} />
       <TabNav tabs={workflowTabs} active={tab} onChange={setTab} />
       <div className="card-compact">
-        <PageTable columns={tab === "queries" ? queryColumns : columns} data={getData()} emptyMessage="No pending items." />
+        {tab === "queries" ? (
+          <PageTable columns={queryColumns} data={queryData} emptyMessage="No queries." />
+        ) : (
+          <PageTable columns={columns} data={tab === "cib" ? cibData : tab === "cad" ? cadData : crmData} emptyMessage="No pending items." />
+        )}
       </div>
     </AppLayout>
   );
