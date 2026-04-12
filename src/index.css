@@ -193,6 +193,16 @@
     display: none;
   }
 
+  .app-content {
+    overflow-x: hidden;
+    overflow-y: auto;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+  .app-content::-webkit-scrollbar {
+    display: none;
+  }
+
   /* Sticky form actions */
   .form-actions-sticky {
     @apply sticky bottom-0 z-10 bg-card border-t border-border px-4 py-3 flex items-center justify-between gap-3;

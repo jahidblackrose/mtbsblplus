@@ -14,7 +14,7 @@ export default function AppLayout({ children }: AppLayoutProps) {
         <AppSidebar />
         <div className="app-main overflow-y-auto scrollbar-none">
           <TopBar />
-          <main className="flex-1 p-4 overflow-x-hidden">{children}</main>
+          <main className="app-content flex-1 p-4">{children}</main>
           <footer className="border-t border-border px-4 py-2.5 flex items-center justify-between">
             <p className="text-[length:var(--font-size-xs)] text-muted-foreground">
               © 2026 Mutual Trust Bank PLC. All rights reserved.
