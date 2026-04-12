@@ -119,7 +119,7 @@ export default function TopBar() {
       <div className="flex items-center gap-3">
         {/* Application ID Badge */}
         {location.pathname.startsWith("/applications/") && (
-          <div className="hidden sm:flex items-center gap-1.5 bg-primary/8 border border-primary/20 rounded-lg px-2.5 py-1.5">
+          <div className="hidden sm:flex items-center gap-1.5 bg-primary/10 border border-primary/20 rounded-lg px-2.5 py-1.5">
             <FileText size={13} className="text-primary" />
             <span className="text-[11px] font-semibold text-primary tracking-wide">App. Id -</span>
             <span className="text-[12px] font-bold text-foreground">SBL001</span>
