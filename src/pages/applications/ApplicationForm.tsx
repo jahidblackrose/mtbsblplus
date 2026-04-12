@@ -216,11 +216,8 @@ const ApplicationForm: React.FC = () => {
   const updateSister = (f: keyof SisterAlliedConcernRecord, v: string) => setCurrentSister((p) => ({ ...p, [f]: v }));
 
   return (
-    <div className="app-shell">
-      <AppSidebar />
-      <div className="app-main">
-        <TopBar />
-        <main className="flex-1 p-4 overflow-x-hidden">
+    <AppLayout>
+      <div className="overflow-x-hidden">
           {/* Step 1: CIF */}
           {step === "input" && !isEditMode && (
             <div className="space-y-4">
@@ -667,13 +664,8 @@ const ApplicationForm: React.FC = () => {
             </div>
           )}
         </main>
-
-        <footer className="border-t border-border px-4 py-2.5 flex items-center justify-between">
-          <p className="text-[length:var(--font-size-xs)] text-muted-foreground">© 2026 Mutual Trust Bank PLC. All rights reserved.</p>
-          <p className="text-[length:var(--font-size-xs)] text-muted-foreground">SBL Portal v1.0.0</p>
-        </footer>
       </div>
-    </div>
+    </AppLayout>
   );
 };
 
