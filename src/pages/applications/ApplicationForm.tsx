@@ -1,7 +1,6 @@
 import React, { useState, useMemo } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import AppSidebar from "@/components/layout/AppSidebar";
-import TopBar from "@/components/layout/TopBar";
+import AppLayout from "@/components/layout/AppLayout";
 import { FormInput, FormSelect, FormTextarea } from "@/components/common/FormControls";
 import { SearchableSelect } from "@/components/common/SearchableSelect";
 import { DataTable, Td } from "@/components/common/DataTable";
