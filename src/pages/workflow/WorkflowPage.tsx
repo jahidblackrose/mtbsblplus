@@ -45,14 +45,6 @@ const queryColumns = [
 export default function WorkflowPage() {
   const [tab, setTab] = useState("crm");
 
-  const getData = () => {
-    switch (tab) {
-      case "cib": return cibData;
-      case "cad": return cadData;
-      case "queries": return queryData;
-      default: return crmData;
-    }
-  };
 
   const titles: Record<string, string> = {
     crm: "CRM Pending Review",
