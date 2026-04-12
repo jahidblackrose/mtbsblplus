@@ -261,15 +261,21 @@ const ApplicationForm: React.FC = () => {
             <div className="space-y-3">
               {/* Stepper header */}
               <div className="card-compact">
-                <div className="px-4 py-3 flex items-center gap-3">
-                  <div className="shrink-0 w-52 min-w-0">
-                    <h2 className="text-[length:var(--font-size-md)] font-semibold text-foreground truncate">
-                      {(currentTabIndex < 0 ? 0 : currentTabIndex) + 1}. {tabConfig.label}
-                    </h2>
-                    <p className="text-[length:var(--font-size-xs)] text-muted-foreground mt-0.5 truncate">{tabConfig.subtitle}</p>
+                <div className="px-4 py-3 flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-3">
+                  <div className="shrink-0 sm:w-52 min-w-0 flex items-center gap-2">
+                    <div className="min-w-0">
+                      <h2 className="text-[length:var(--font-size-md)] font-semibold text-foreground truncate">
+                        {(currentTabIndex < 0 ? 0 : currentTabIndex) + 1}. {tabConfig.label}
+                      </h2>
+                      <p className="text-[length:var(--font-size-xs)] text-muted-foreground mt-0.5 truncate">{tabConfig.subtitle}</p>
+                    </div>
+                    <div className="shrink-0 flex items-center gap-1.5 bg-primary/10 border border-primary/20 rounded-lg px-2.5 py-1.5 sm:hidden">
+                      <span className="text-[11px] font-semibold text-primary">App. Id. -</span>
+                      <span className="text-[12px] font-bold text-foreground">SBL001</span>
+                    </div>
                   </div>
-                  <div className="flex-1 flex justify-center">
-                    <div className="flex items-center gap-1.5">
+                  <div className="flex-1 flex sm:justify-center">
+                    <div className="flex items-center gap-1.5 flex-wrap">
                       {tabs.map((tab, i) => (
                         <button
                           key={tab.id}
@@ -289,7 +295,7 @@ const ApplicationForm: React.FC = () => {
                       ))}
                     </div>
                   </div>
-                  <div className="shrink-0 flex items-center gap-1.5 bg-primary/10 border border-primary/20 rounded-lg px-2.5 py-1.5">
+                  <div className="hidden sm:flex shrink-0 items-center gap-1.5 bg-primary/10 border border-primary/20 rounded-lg px-2.5 py-1.5">
                     <span className="text-[11px] font-semibold text-primary">App. Id. -</span>
                     <span className="text-[12px] font-bold text-foreground">SBL001</span>
                   </div>
