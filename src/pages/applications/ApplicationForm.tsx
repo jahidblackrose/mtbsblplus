@@ -1,7 +1,6 @@
 import React, { useState, useMemo } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import AppSidebar from "@/components/layout/AppSidebar";
-import TopBar from "@/components/layout/TopBar";
+import AppLayout from "@/components/layout/AppLayout";
 import { FormInput, FormSelect, FormTextarea } from "@/components/common/FormControls";
 import { SearchableSelect } from "@/components/common/SearchableSelect";
 import { DataTable, Td } from "@/components/common/DataTable";
@@ -217,11 +216,8 @@ const ApplicationForm: React.FC = () => {
   const updateSister = (f: keyof SisterAlliedConcernRecord, v: string) => setCurrentSister((p) => ({ ...p, [f]: v }));
 
   return (
-    <div className="app-shell">
-      <AppSidebar />
-      <div className="app-main">
-        <TopBar />
-        <main className="flex-1 p-4 overflow-x-hidden">
+    <AppLayout>
+      <div className="overflow-x-hidden">
           {/* Step 1: CIF */}
           {step === "input" && !isEditMode && (
             <div className="space-y-4">
@@ -667,14 +663,8 @@ const ApplicationForm: React.FC = () => {
               </form>
             </div>
           )}
-        </main>
-
-        <footer className="border-t border-border px-4 py-2.5 flex items-center justify-between">
-          <p className="text-[length:var(--font-size-xs)] text-muted-foreground">© 2026 Mutual Trust Bank PLC. All rights reserved.</p>
-          <p className="text-[length:var(--font-size-xs)] text-muted-foreground">SBL Portal v1.0.0</p>
-        </footer>
-      </div>
-    </div>
+        </div>
+    </AppLayout>
   );
 };
 
