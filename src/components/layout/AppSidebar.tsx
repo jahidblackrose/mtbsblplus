@@ -174,16 +174,16 @@ function NavSection({ title, items }: { title: string; items: NavItem[] }) {
                   isOpen ? "max-h-[500px] opacity-100" : "max-h-0 opacity-0"
                 )}
               >
-                <div className="ml-3 pl-2.5 border-l border-border/40 mt-0.5 mb-1 space-y-0.5">
+                <div className="ml-3 pl-2.5 border-l-2 border-primary/30 mt-0.5 mb-1 space-y-0.5">
                   {item.children!.map((sub) => (
-                    <NavLink
+                <NavLink
                       key={sub.to}
                       to={sub.to}
                       onClick={close}
                       className={cn(
                         "flex items-center gap-2 px-2 py-[5px] rounded-md text-[12px] font-medium transition-all duration-150",
                         isSubActive(sub)
-                          ? "bg-primary text-primary-foreground"
+                          ? "bg-primary text-primary-foreground shadow-sm"
                           : "text-sidebar-foreground/70 hover:bg-sidebar-accent hover:text-sidebar-foreground"
                       )}
                     >
