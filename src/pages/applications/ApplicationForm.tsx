@@ -261,15 +261,21 @@ const ApplicationForm: React.FC = () => {
             <div className="space-y-3">
               {/* Stepper header */}
               <div className="card-compact">
-                <div className="px-4 py-3 flex flex-col md:flex-row md:items-center gap-3">
-                  <div className="shrink-0 md:w-56">
-                    <h2 className="text-[length:var(--font-size-md)] font-semibold text-foreground">
-                      {(currentTabIndex < 0 ? 0 : currentTabIndex) + 1}. {tabConfig.label}
-                    </h2>
-                    <p className="text-[length:var(--font-size-xs)] text-muted-foreground mt-0.5">{tabConfig.subtitle}</p>
+                <div className="px-4 py-3 flex flex-col gap-3">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <h2 className="text-[length:var(--font-size-md)] font-semibold text-foreground">
+                        {(currentTabIndex < 0 ? 0 : currentTabIndex) + 1}. {tabConfig.label}
+                      </h2>
+                      <p className="text-[length:var(--font-size-xs)] text-muted-foreground mt-0.5">{tabConfig.subtitle}</p>
+                    </div>
+                    <div className="shrink-0 flex items-center gap-1.5 bg-primary/10 border border-primary/20 rounded-lg px-2.5 py-1.5">
+                      <span className="text-[11px] font-semibold text-primary">App. Id. -</span>
+                      <span className="text-[12px] font-bold text-foreground">SBL001</span>
+                    </div>
                   </div>
-                  <div className="flex-1 flex items-center gap-3 overflow-x-auto">
-                    <div className="flex items-center gap-1.5 min-w-[28rem]">
+                  <div className="flex justify-center">
+                    <div className="flex items-center gap-1.5">
                       {tabs.map((tab, i) => (
                         <button
                           key={tab.id}
@@ -287,10 +293,6 @@ const ApplicationForm: React.FC = () => {
                           {i + 1}
                         </button>
                       ))}
-                    </div>
-                    <div className="ml-auto shrink-0 flex items-center gap-1.5 bg-primary/10 border border-primary/20 rounded-lg px-2.5 py-1.5">
-                      <span className="text-[11px] font-semibold text-primary">App. Id. -</span>
-                      <span className="text-[12px] font-bold text-foreground">SBL001</span>
                     </div>
                   </div>
                 </div>
