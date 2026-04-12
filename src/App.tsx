@@ -18,6 +18,7 @@ import WorkflowPage from "./pages/workflow/WorkflowPage";
 import ReportsPage from "./pages/reports/ReportsPage";
 import MastersPage from "./pages/masters/MastersPage";
 import SettingsPage from "./pages/settings/SettingsPage";
+import FormShowcase from "./pages/showcase/FormShowcase";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -48,7 +49,7 @@ function AppRoutes() {
       <Route path="/masters/:tab" element={<ProtectedRoute><MastersPage /></ProtectedRoute>} />
       <Route path="/settings" element={<ProtectedRoute><SettingsPage /></ProtectedRoute>} />
       <Route path="/profile" element={<ProtectedRoute><SettingsPage /></ProtectedRoute>} />
-      <Route path="/showcase" element={<ProtectedRoute><Index /></ProtectedRoute>} />
+      <Route path="/showcase" element={<ProtectedRoute><FormShowcase /></ProtectedRoute>} />
       <Route path="*" element={<NotFound />} />
     </Routes>
   );
