@@ -1,26 +1,26 @@
 import React from "react";
 import { cn } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
 
+/* Page header - now minimal since TopBar shows the main title */
 interface PageHeaderProps {
   title: string;
   subtitle?: string;
-  children?: React.ReactNode; // action buttons
+  children?: React.ReactNode;
 }
 
 export function PageHeader({ title, subtitle, children }: PageHeaderProps) {
   return (
     <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-4">
       <div>
-        <h1 className="text-[length:var(--font-size-xl)] font-bold text-foreground">{title}</h1>
-        {subtitle && <p className="text-[length:var(--font-size-sm)] text-muted-foreground mt-0.5">{subtitle}</p>}
+        <h1 className="text-[18px] font-bold text-foreground">{title}</h1>
+        {subtitle && <p className="text-[13px] text-muted-foreground mt-0.5">{subtitle}</p>}
       </div>
       {children && <div className="flex items-center gap-2">{children}</div>}
     </div>
   );
 }
 
-/* Compact stat card */
+/* Stat card */
 interface StatCardProps {
   title: string;
   value: string | number;
@@ -42,9 +42,9 @@ export function StatCard({ title, value, change, note, icon, tone = "primary" }:
     <div className="card-compact p-3">
       <div className="flex items-start justify-between">
         <div>
-          <p className="text-[length:var(--font-size-xs)] font-medium text-muted-foreground uppercase tracking-wide">{title}</p>
-          <p className="text-[length:var(--font-size-2xl)] font-bold text-foreground mt-1">{value}</p>
-          {change && <p className="text-[length:var(--font-size-xs)] text-muted-foreground mt-0.5">{change}</p>}
+          <p className="text-[12px] font-medium text-muted-foreground uppercase tracking-wide">{title}</p>
+          <p className="text-[22px] font-bold text-foreground mt-1">{value}</p>
+          {change && <p className="text-[12px] text-muted-foreground mt-0.5">{change}</p>}
         </div>
         {icon && (
           <div className={cn("w-8 h-8 rounded-md flex items-center justify-center", toneBg[tone])}>
@@ -52,12 +52,12 @@ export function StatCard({ title, value, change, note, icon, tone = "primary" }:
           </div>
         )}
       </div>
-      {note && <p className="text-[length:var(--font-size-xs)] text-muted-foreground mt-2 border-t border-border pt-2">{note}</p>}
+      {note && <p className="text-[12px] text-muted-foreground mt-2 border-t border-border pt-2">{note}</p>}
     </div>
   );
 }
 
-/* Compact page table */
+/* Page table */
 interface Column<T> {
   label: string;
   key: string;
@@ -74,7 +74,7 @@ interface PageTableProps<T> {
 export function PageTable<T extends Record<string, any>>({ columns, data, emptyMessage = "No data." }: PageTableProps<T>) {
   return (
     <div className="overflow-x-auto">
-      <table className="min-w-full divide-y divide-border text-[length:var(--font-size-sm)]">
+      <table className="min-w-full divide-y divide-border text-[13px]">
         <thead className="bg-muted/50">
           <tr>
             {columns.map((col) => (
@@ -136,17 +136,14 @@ const badgeVariants: Record<string, string> = {
 
 export function StatusBadge({ children, variant = "default" }: BadgeProps) {
   return (
-    <span className={cn("inline-flex items-center px-2 py-0.5 rounded text-[length:var(--font-size-xs)] font-medium", badgeVariants[variant])}>
+    <span className={cn("inline-flex items-center px-2 py-0.5 rounded text-[12px] font-medium", badgeVariants[variant])}>
       {children}
     </span>
   );
 }
 
 /* Filter bar */
-interface FilterBarProps {
-  children: React.ReactNode;
-}
-export function FilterBar({ children }: FilterBarProps) {
+export function FilterBar({ children }: { children: React.ReactNode }) {
   return (
     <div className="flex flex-wrap items-center gap-2 mb-3">
       {children}
@@ -154,7 +151,7 @@ export function FilterBar({ children }: FilterBarProps) {
   );
 }
 
-/* Compact tab navigation */
+/* Tab navigation */
 interface TabItem { id: string; label: string; }
 interface TabNavProps {
   tabs: TabItem[];
@@ -170,7 +167,7 @@ export function TabNav({ tabs, active, onChange }: TabNavProps) {
           type="button"
           onClick={() => onChange(tab.id)}
           className={cn(
-            "px-3 py-1.5 text-[length:var(--font-size-sm)] font-medium transition-colors border-b-2 -mb-px",
+            "px-3 py-1.5 text-[13px] font-medium transition-colors border-b-2 -mb-px",
             active === tab.id
               ? "border-primary text-primary"
               : "border-transparent text-muted-foreground hover:text-foreground"
