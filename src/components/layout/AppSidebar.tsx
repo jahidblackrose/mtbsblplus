@@ -1,8 +1,10 @@
-import { Home, FolderOpen, GitBranch, BarChart3, Users, Sparkles, Settings, X } from "lucide-react";
+import { Home, FolderOpen, GitBranch, BarChart3, Users, Sparkles, Settings, X, LogOut } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { NavLink } from "@/components/NavLink";
 import { useSidebarState } from "@/hooks/use-sidebar-state";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
+import { useAuthStore } from "@/stores/authStore";
+import mtbLogo from "@/assets/mtb-logo-full.png";
 
 interface NavItem {
   label: string;
@@ -63,31 +65,31 @@ function NavSection({ title, items }: { title: string; items: NavItem[] }) {
 
 export default function AppSidebar() {
   const { open, close } = useSidebarState();
+  const logout = useAuthStore((s) => s.logout);
+  const user = useAuthStore((s) => s.user);
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    logout();
+    navigate("/login", { replace: true });
+  };
 
   return (
     <>
-      {/* Mobile backdrop */}
       {open && (
         <div className="fixed inset-0 z-40 bg-black/30 md:hidden" onClick={close} />
       )}
 
-      {/* Sidebar */}
       <aside
         className={cn(
           "fixed md:static z-50 top-0 left-0 h-full w-[var(--sidebar-width)] bg-sidebar border-r border-sidebar-border flex flex-col shrink-0 transition-transform duration-200 ease-in-out",
           open ? "translate-x-0" : "-translate-x-full md:translate-x-0"
         )}
       >
-        {/* Logo + mobile close */}
         <div className="flex items-center justify-between px-3 py-3 border-b border-sidebar-border">
           <div className="flex items-center gap-2.5">
-            <div className="w-7 h-7 rounded-md bg-primary flex items-center justify-center">
-              <span className="text-primary-foreground font-bold text-[length:var(--font-size-xs)]">🏛</span>
-            </div>
+            <img src={mtbLogo} alt="MTB" className="h-7 object-contain" />
             <div className="leading-tight min-w-0">
-              <p className="text-[length:var(--font-size-xs)] font-semibold text-muted-foreground uppercase tracking-wide truncate">
-                Mutual Trust Bank
-              </p>
               <p className="text-[length:var(--font-size-base)] font-semibold text-sidebar-foreground">SBL Portal</p>
             </div>
           </div>
@@ -96,21 +98,30 @@ export default function AppSidebar() {
           </button>
         </div>
 
-        {/* Navigation */}
         <div className="flex-1 pt-3 overflow-y-auto">
           <NavSection title="Main" items={mainNav} />
           <NavSection title="Workspace" items={workspaceNav} />
         </div>
 
-        {/* User */}
-        <div className="border-t border-sidebar-border p-3 flex items-center gap-2.5">
-          <div className="w-7 h-7 rounded-md bg-muted flex items-center justify-center">
-            <Users size={14} className="text-muted-foreground" />
+        <div className="border-t border-sidebar-border p-3">
+          <div className="flex items-center gap-2.5 mb-2">
+            <div className="w-7 h-7 rounded-md bg-muted flex items-center justify-center">
+              <Users size={14} className="text-muted-foreground" />
+            </div>
+            <div className="leading-tight min-w-0 flex-1">
+              <p className="text-[length:var(--font-size-base)] font-medium text-sidebar-foreground truncate">
+                {user?.displayName || "System Admin"}
+              </p>
+              <p className="text-[length:var(--font-size-xs)] text-muted-foreground">{user?.role || "Admin"}</p>
+            </div>
           </div>
-          <div className="leading-tight min-w-0">
-            <p className="text-[length:var(--font-size-base)] font-medium text-sidebar-foreground truncate">System Admin</p>
-            <p className="text-[length:var(--font-size-xs)] text-muted-foreground">Admin</p>
-          </div>
+          <button
+            onClick={handleLogout}
+            className="flex items-center gap-2 w-full px-2.5 py-1.5 rounded-md text-[length:var(--font-size-base)] text-muted-foreground hover:bg-destructive/10 hover:text-destructive transition-colors"
+          >
+            <LogOut size={14} />
+            Sign out
+          </button>
         </div>
       </aside>
     </>
