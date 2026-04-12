@@ -2,37 +2,39 @@ import { ChevronLeft, Search, Bell } from "lucide-react";
 
 export default function TopBar() {
   return (
-    <header className="h-16 border-b border-border bg-card flex items-center justify-between px-6">
+    <header className="h-11 border-b border-border bg-card flex items-center justify-between px-4 shrink-0">
       {/* Left */}
-      <div className="flex items-center gap-3">
-        <button className="w-8 h-8 rounded-full border border-border flex items-center justify-center hover:bg-muted transition-colors">
-          <ChevronLeft size={16} className="text-foreground" />
+      <div className="flex items-center gap-2.5">
+        <button className="w-6 h-6 rounded-full border border-border flex items-center justify-center hover:bg-muted transition-colors">
+          <ChevronLeft size={13} className="text-foreground" />
         </button>
-        <div>
-          <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Workflow</p>
-          <p className="text-base font-semibold text-foreground">Crm</p>
+        <div className="leading-tight">
+          <p className="text-[length:var(--font-size-xs)] font-semibold uppercase tracking-wider text-muted-foreground">
+            Workflow
+          </p>
+          <p className="text-[length:var(--font-size-md)] font-semibold text-foreground leading-none">Crm</p>
         </div>
       </div>
 
       {/* Right */}
-      <div className="flex items-center gap-4">
+      <div className="flex items-center gap-3">
         <div className="relative">
-          <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+          <Search size={13} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-muted-foreground" />
           <input
             type="text"
             placeholder="Search"
-            className="h-9 w-52 rounded-lg border border-border bg-muted pl-9 pr-3 text-sm outline-none focus:ring-2 focus:ring-ring placeholder:text-muted-foreground"
+            className="h-[var(--control-h-sm)] w-44 rounded-md border border-border bg-muted pl-7 pr-2.5 text-[length:var(--font-size-base)] outline-none focus:ring-2 focus:ring-ring placeholder:text-muted-foreground"
           />
         </div>
-        <button className="w-9 h-9 rounded-full border border-border flex items-center justify-center hover:bg-muted transition-colors">
-          <Bell size={16} className="text-foreground" />
+        <button className="w-7 h-7 rounded-full border border-border flex items-center justify-center hover:bg-muted transition-colors">
+          <Bell size={13} className="text-foreground" />
         </button>
-        <div className="flex items-center gap-2 border border-border rounded-lg px-3 py-1.5">
+        <div className="flex items-center gap-2 border border-border rounded-md px-2.5 py-1">
           <div className="text-right leading-tight">
-            <p className="text-sm font-medium text-foreground">System Administrator</p>
-            <p className="text-xs text-muted-foreground">Head Office</p>
+            <p className="text-[length:var(--font-size-base)] font-medium text-foreground">System Administrator</p>
+            <p className="text-[length:var(--font-size-xs)] text-muted-foreground">Head Office</p>
           </div>
-          <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center text-sm font-semibold text-foreground">
+          <div className="w-6 h-6 rounded-full bg-muted flex items-center justify-center text-[length:var(--font-size-xs)] font-semibold text-foreground">
             S
           </div>
         </div>
