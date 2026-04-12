@@ -49,7 +49,7 @@ function AppRoutes() {
       <Route path="/masters/:tab" element={<ProtectedRoute><MastersPage /></ProtectedRoute>} />
       <Route path="/settings" element={<ProtectedRoute><SettingsPage /></ProtectedRoute>} />
       <Route path="/profile" element={<ProtectedRoute><SettingsPage /></ProtectedRoute>} />
-      <Route path="/showcase" element={<ProtectedRoute><Index /></ProtectedRoute>} />
+      <Route path="/showcase" element={<ProtectedRoute><FormShowcase /></ProtectedRoute>} />
       <Route path="*" element={<NotFound />} />
     </Routes>
   );
