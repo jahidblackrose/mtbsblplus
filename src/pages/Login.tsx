@@ -51,7 +51,7 @@ export default function Login() {
         <div className="hidden md:flex flex-col justify-between bg-[hsl(215,30%,14%)] text-white p-8">
           <div>
             {/* Logo */}
-            <div className="bg-white/10 rounded-lg px-4 py-3 inline-flex items-center gap-3 mb-8">
+            <div className="bg-white rounded-lg px-4 py-3 inline-flex items-center gap-3 mb-8">
               <img src={mtbLogo} alt="Mutual Trust Bank PLC" className="h-10 object-contain" />
             </div>
 
