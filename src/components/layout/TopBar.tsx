@@ -1,8 +1,9 @@
-import { ChevronLeft, Search, Bell, LogOut } from "lucide-react";
+import { useState, useRef, useEffect } from "react";
+import { ChevronLeft, Search, Bell, LogOut, Check, Info, AlertTriangle, X } from "lucide-react";
 import { useSidebarState } from "@/hooks/use-sidebar-state";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useAuthStore } from "@/stores/authStore";
-import { useNavigate } from "react-router-dom";
+import { cn } from "@/lib/utils";
 
 const routeTitles: Record<string, { title: string; subtitle: string }> = {
   "/dashboard": { title: "Dashboard", subtitle: "Operational Workspace" },
