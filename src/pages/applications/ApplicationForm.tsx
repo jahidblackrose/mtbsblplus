@@ -226,7 +226,7 @@ const ApplicationForm: React.FC = () => {
 
   return (
     <AppLayout>
-      <div className="overflow-x-hidden">
+      <div>
           {/* Step 1: CIF */}
           {step === "input" && !isEditMode && (
             <div className="space-y-4">
