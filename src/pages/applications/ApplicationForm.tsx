@@ -654,11 +654,14 @@ const ApplicationForm: React.FC = () => {
 
                 {/* Footer nav */}
                 {error && <p className="mt-3 text-[length:var(--font-size-sm)] text-destructive">{error}</p>}
-                <div className="mt-3 flex justify-between">
+                <div className="form-actions-sticky -mx-4 -mb-4 mt-4 rounded-b-lg">
                   <Button type="button" variant="outline" onClick={handleBack} disabled={loading}>Back</Button>
-                  <Button type="submit" disabled={loading}>
-                    {loading ? "Processing..." : isLastTab ? "Submit" : "Proceed"}
-                  </Button>
+                  <div className="flex items-center gap-2">
+                    <Button type="button" variant="ghost" disabled={loading}>Save Draft</Button>
+                    <Button type="submit" disabled={loading}>
+                      {loading ? "Processing..." : isLastTab ? "Submit" : "Next Step"}
+                    </Button>
+                  </div>
                 </div>
               </form>
             </div>
