@@ -18,7 +18,7 @@
     /* Bootstrap form-control-sm = 31px height */
     --control-h-xs: 1.625rem;    /* 26px */
     --control-h-sm: 1.75rem;     /* 28px */
-    --control-h: 1.9375rem;      /* 31px — form-control-sm */
+    --control-h: 2.125rem;      /* 34px */
     --control-h-lg: 2.25rem;     /* 36px */
 
     --space-1: 0.125rem;
