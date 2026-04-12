@@ -663,8 +663,7 @@ const ApplicationForm: React.FC = () => {
               </form>
             </div>
           )}
-        </main>
-      </div>
+        </div>
     </AppLayout>
   );
 };
