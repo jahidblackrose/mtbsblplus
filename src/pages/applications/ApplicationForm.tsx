@@ -1,5 +1,6 @@
 import React, { useState, useMemo } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import { toast } from "sonner";
 import AppLayout from "@/components/layout/AppLayout";
 import { FormInput, FormSelect, FormTextarea } from "@/components/common/FormControls";
 import { SearchableSelect } from "@/components/common/SearchableSelect";
@@ -173,26 +174,34 @@ const ApplicationForm: React.FC = () => {
   const today = new Date().toISOString().slice(0, 10);
 
   const handleVerify = async () => {
-    if (!cif.trim()) { setError("Please enter Company CIF"); return; }
+    if (!cif.trim()) { setError("Please enter Company CIF"); toast.warning("Please enter Company CIF"); return; }
     setLoading(true); setError(""); setIsVerified(false); setCompanyData(null);
+    toast.loading("Verifying CIF...", { id: "cif-verify" });
     // Demo fallback
     setTimeout(() => {
       setCompanyData({ cif, name: "Demo Company Name", address: "Demo Company Address, Dhaka" });
       setIsVerified(true);
       setLoading(false);
+      toast.success("CIF verified successfully", { id: "cif-verify" });
     }, 600);
   };
 
   const goToDetails = () => {
-    if (!companyData || !isVerified) { setError("Please verify CIF before proceeding."); return; }
+    if (!companyData || !isVerified) { setError("Please verify CIF before proceeding."); toast.error("Please verify CIF before proceeding."); return; }
     setStep("confirm");
+    toast.success("Application SBL001 created successfully!", { description: "You can now fill in the application details." });
   };
 
   const handleProceed = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!isLastTab) {
       const next = tabs[currentTabIndex + 1];
-      if (next) setActiveTab(next.id);
+      if (next) {
+        setActiveTab(next.id);
+        toast.success(`Saved — Moving to ${next.label}`);
+      }
+    } else {
+      toast.success("Application submitted successfully!", { description: "SBL001 has been submitted for review." });
     }
   };
 
@@ -657,7 +666,7 @@ const ApplicationForm: React.FC = () => {
                 <div className="form-actions-sticky -mx-4 -mb-4 mt-4 rounded-b-lg">
                   <Button type="button" variant="outline" onClick={handleBack} disabled={loading}>Back</Button>
                   <div className="flex items-center gap-2">
-                    <Button type="button" variant="ghost" disabled={loading}>Save Draft</Button>
+                    <Button type="button" variant="ghost" disabled={loading} onClick={() => toast.info("Draft saved", { description: "Your progress has been saved." })}>Save Draft</Button>
                     <Button type="submit" disabled={loading}>
                       {loading ? "Processing..." : isLastTab ? "Submit" : "Next Step"}
                     </Button>

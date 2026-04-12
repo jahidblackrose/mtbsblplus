@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import { ChevronLeft, Search, Bell, LogOut, Check, Info, AlertTriangle, X } from "lucide-react";
+import { ChevronLeft, Search, Bell, LogOut, Check, Info, AlertTriangle, X, FileText } from "lucide-react";
 import { useSidebarState } from "@/hooks/use-sidebar-state";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useAuthStore } from "@/stores/authStore";
@@ -115,8 +115,16 @@ export default function TopBar() {
         />
       </div>
 
-      {/* Right: bell, user, logout */}
+      {/* Right: App ID badge, bell, user, logout */}
       <div className="flex items-center gap-3">
+        {/* Application ID Badge */}
+        {location.pathname.startsWith("/applications/") && (
+          <div className="hidden sm:flex items-center gap-1.5 bg-primary/8 border border-primary/20 rounded-lg px-2.5 py-1.5">
+            <FileText size={13} className="text-primary" />
+            <span className="text-[11px] font-semibold text-primary tracking-wide">App. Id -</span>
+            <span className="text-[12px] font-bold text-foreground">SBL001</span>
+          </div>
+        )}
         {/* Notification Bell */}
         <div className="relative" ref={notifRef}>
           <button
