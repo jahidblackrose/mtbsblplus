@@ -296,13 +296,13 @@ const ApplicationForm: React.FC = () => {
                       <FormSelect label="Business Type" name="businessType" required options={[{ value: "manufacturing", label: "Manufacturing" }, { value: "trading", label: "Trading" }, { value: "services", label: "Services" }]} />
                       <FormInput label="CIF" name="cifSelect" defaultValue={companyData.cif} disabled helperText="From previous step" />
                       <FormSelect label="Enterprise Type" name="enterpriseType" options={[{ value: "micro", label: "Micro" }, { value: "sme", label: "SME" }, { value: "corporate", label: "Corporate" }]} />
-                      <FormInput label="Exposure" name="exposure" type="number" placeholder="0.00" />
+                      <FormInput label="Exposure" name="exposure" type="number" placeholder="0.00" tooltip="Total credit exposure of the obligor across all facilities and financial institutions" />
                       <FormSelect label="Legal Status" name="legalStatus" options={[{ value: "proprietorship", label: "Proprietorship" }, { value: "partnership", label: "Partnership" }, { value: "limited", label: "Limited Company" }]} />
                       <FormInput label="Existing Limit (BDT)" name="existingLimit" type="number" placeholder="0.00" />
                       <FormInput label="O/S" name="osAmount" type="number" placeholder="0.00" />
                       <FormInput label="Proposed Limit (BDT)" name="proposedLimit" type="number" placeholder="0.00" required />
                       <FormInput label="Earnings from Existing Client" name="earningsExistingClient" type="number" placeholder="0.00" />
-                      <FormSelect label="Gender (API)" name="gender" options={[{ value: "male", label: "Male" }, { value: "female", label: "Female" }, { value: "other", label: "Other" }]} />
+                      <FormSelect label="Gender (API)" name="gender" disabled options={[{ value: "male", label: "Male" }, { value: "female", label: "Female" }, { value: "other", label: "Other" }]} helperText="Auto-filled from CIF" />
                       <FormInput label="Client Application Date" name="clientApplicationDate" type="date" />
                       <FormSelect label="Credit Memo Type" name="creditMemoType" options={[{ value: "new", label: "New" }, { value: "renewal", label: "Renewal" }, { value: "enhancement", label: "Enhancement" }]} />
                       <FormInput label="Lending Relationship Since" name="lendingRelationshipSince" type="date" />
@@ -314,13 +314,13 @@ const ApplicationForm: React.FC = () => {
                       <FormInput label="Name of Refinance Scheme" name="refinanceSchemeName" placeholder="Enter refinance scheme name" />
                       <FormSelect label="Rated By" name="ratedBy" options={[{ value: "internal", label: "Internal Rating" }, { value: "external", label: "External Agency" }]} />
                       <FormInput label="Key Person Name & Position" name="keyPerson" placeholder="e.g. MD & CEO" />
-                      <FormSelect label="DOE Risk Category" name="doeRiskCategory" options={[{ value: "green", label: "Green" }, { value: "yellow", label: "Yellow" }, { value: "red", label: "Red" }]} />
+                      <FormSelect label="DOE Risk Category" name="doeRiskCategory" tooltip="Department of Environment risk classification based on business sector and environmental impact" options={[{ value: "green", label: "Green" }, { value: "yellow", label: "Yellow" }, { value: "red", label: "Red" }]} />
                       <FormInput label="Distance from Branch (KM)" name="distanceFromBranch" type="number" step="0.1" placeholder="0.0" />
-                      <FormSelect label="ESRR Rating" name="esrrRating" options={[{ value: "low", label: "Low Risk" }, { value: "medium", label: "Medium Risk" }, { value: "high", label: "High Risk" }]} />
-                      <FormInput label="SBS Code (Edit)" name="sbsCode" placeholder="Enter SBS code" helperText="Editable as per policy" />
+                      <FormSelect label="ESRR Rating" name="esrrRating" tooltip="Environmental & Social Risk Rating — assessed per Bangladesh Bank ESRM guidelines" options={[{ value: "low", label: "Low Risk" }, { value: "medium", label: "Medium Risk" }, { value: "high", label: "High Risk" }]} />
+                      <FormInput label="SBS Code" name="sbsCode" placeholder="Enter SBS code" tooltip="Special Business Sector code per Bangladesh Bank classification" helperText="Editable as per policy" />
                       <FormInput label="DOE Validity" name="doeValidity" type="date" />
                       <FormTextarea label="Registered Business Address" name="registeredBusinessAddress" />
-                      <FormSelect label="ESDD Requirement" name="esddRequirement" options={[{ value: "yes", label: "Yes" }, { value: "no", label: "No" }]} />
+                      <FormSelect label="ESDD Requirement" name="esddRequirement" tooltip="Environmental & Social Due Diligence — required for medium/high ESRR rated facilities" options={[{ value: "yes", label: "Yes" }, { value: "no", label: "No" }]} />
                       <FormTextarea label="Brief Description of Business" name="businessDescription" rows={3} />
                       <FormTextarea label="About the Proprietor" name="aboutProprietor" rows={3} />
                     </div>
