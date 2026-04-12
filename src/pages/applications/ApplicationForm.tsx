@@ -262,11 +262,11 @@ const ApplicationForm: React.FC = () => {
               {/* Stepper header */}
               <div className="card-compact">
                 <div className="px-4 py-3 flex items-center gap-3">
-                  <div className="shrink-0">
-                    <h2 className="text-[length:var(--font-size-md)] font-semibold text-foreground">
+                  <div className="shrink-0 w-52 min-w-0">
+                    <h2 className="text-[length:var(--font-size-md)] font-semibold text-foreground truncate">
                       {(currentTabIndex < 0 ? 0 : currentTabIndex) + 1}. {tabConfig.label}
                     </h2>
-                    <p className="text-[length:var(--font-size-xs)] text-muted-foreground mt-0.5">{tabConfig.subtitle}</p>
+                    <p className="text-[length:var(--font-size-xs)] text-muted-foreground mt-0.5 truncate">{tabConfig.subtitle}</p>
                   </div>
                   <div className="flex-1 flex justify-center">
                     <div className="flex items-center gap-1.5">
