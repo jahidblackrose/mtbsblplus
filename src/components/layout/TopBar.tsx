@@ -26,6 +26,29 @@ function getPageInfo(pathname: string) {
   return { title: "Page", subtitle: "" };
 }
 
+interface Notification {
+  id: string;
+  title: string;
+  message: string;
+  time: string;
+  read: boolean;
+  type: "info" | "success" | "warning";
+}
+
+const initialNotifications: Notification[] = [
+  { id: "1", title: "Application Approved", message: "SBL-2024-00142 has been approved by CAD", time: "2 min ago", read: false, type: "success" },
+  { id: "2", title: "New Query Assigned", message: "Query #Q-887 assigned to your desk for review", time: "15 min ago", read: false, type: "info" },
+  { id: "3", title: "Disbursement Pending", message: "3 applications pending disbursement clearance", time: "1 hr ago", read: false, type: "warning" },
+  { id: "4", title: "CRM Review Complete", message: "SBL-2024-00139 CRM review completed", time: "3 hrs ago", read: true, type: "success" },
+  { id: "5", title: "System Maintenance", message: "Scheduled maintenance tonight at 11:00 PM", time: "5 hrs ago", read: true, type: "info" },
+];
+
+const typeIcon = {
+  info: <Info size={14} className="text-blue-500 shrink-0" />,
+  success: <Check size={14} className="text-green-600 shrink-0" />,
+  warning: <AlertTriangle size={14} className="text-yellow-600 shrink-0" />,
+};
+
 export default function TopBar() {
   const { toggle } = useSidebarState();
   const location = useLocation();
@@ -33,6 +56,26 @@ export default function TopBar() {
   const user = useAuthStore((s) => s.user);
   const logout = useAuthStore((s) => s.logout);
   const navigate = useNavigate();
+  const [notifications, setNotifications] = useState<Notification[]>(initialNotifications);
+  const [showNotifs, setShowNotifs] = useState(false);
+  const notifRef = useRef<HTMLDivElement>(null);
+
+  const unreadCount = notifications.filter((n) => !n.read).length;
+
+  // Close on outside click
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (notifRef.current && !notifRef.current.contains(e.target as Node)) {
+        setShowNotifs(false);
+      }
+    };
+    if (showNotifs) document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, [showNotifs]);
+
+  const markAllRead = () => setNotifications((prev) => prev.map((n) => ({ ...n, read: true })));
+  const markRead = (id: string) => setNotifications((prev) => prev.map((n) => n.id === id ? { ...n, read: true } : n));
+  const removeNotif = (id: string) => setNotifications((prev) => prev.filter((n) => n.id !== id));
 
   const handleLogout = () => {
     logout();
@@ -74,9 +117,84 @@ export default function TopBar() {
 
       {/* Right: bell, user, logout */}
       <div className="flex items-center gap-3">
-        <button className="w-8 h-8 rounded-full border border-border flex items-center justify-center hover:bg-muted transition-colors">
-          <Bell size={14} className="text-foreground" />
-        </button>
+        {/* Notification Bell */}
+        <div className="relative" ref={notifRef}>
+          <button
+            onClick={() => setShowNotifs(!showNotifs)}
+            className="w-8 h-8 rounded-full border border-border flex items-center justify-center hover:bg-muted transition-colors relative"
+          >
+            <Bell size={14} className="text-foreground" />
+            {unreadCount > 0 && (
+              <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-destructive text-destructive-foreground text-[9px] font-bold flex items-center justify-center">
+                {unreadCount}
+              </span>
+            )}
+          </button>
+
+          {/* Dropdown */}
+          {showNotifs && (
+            <div className="absolute right-0 top-full mt-2 w-[340px] bg-card border border-border rounded-lg shadow-lg z-50 overflow-hidden">
+              {/* Header */}
+              <div className="flex items-center justify-between px-3 py-2.5 border-b border-border bg-muted/30">
+                <p className="text-[13px] font-semibold text-foreground">Notifications</p>
+                {unreadCount > 0 && (
+                  <button
+                    onClick={markAllRead}
+                    className="text-[11px] font-medium text-primary hover:underline"
+                  >
+                    Mark all read
+                  </button>
+                )}
+              </div>
+
+              {/* List */}
+              <div className="max-h-[320px] overflow-y-auto divide-y divide-border">
+                {notifications.length === 0 ? (
+                  <div className="py-8 text-center text-[13px] text-muted-foreground">
+                    No notifications
+                  </div>
+                ) : (
+                  notifications.map((n) => (
+                    <div
+                      key={n.id}
+                      onClick={() => markRead(n.id)}
+                      className={cn(
+                        "flex gap-2.5 px-3 py-2.5 cursor-pointer hover:bg-muted/50 transition-colors",
+                        !n.read && "bg-primary/[0.03]"
+                      )}
+                    >
+                      <div className="mt-0.5">{typeIcon[n.type]}</div>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-start justify-between gap-2">
+                          <p className={cn("text-[12px] leading-snug", !n.read ? "font-semibold text-foreground" : "font-medium text-foreground/80")}>
+                            {n.title}
+                          </p>
+                          <button
+                            onClick={(e) => { e.stopPropagation(); removeNotif(n.id); }}
+                            className="shrink-0 w-4 h-4 flex items-center justify-center rounded hover:bg-muted text-muted-foreground hover:text-foreground"
+                          >
+                            <X size={10} />
+                          </button>
+                        </div>
+                        <p className="text-[11px] text-muted-foreground leading-snug mt-0.5 truncate">{n.message}</p>
+                        <p className="text-[10px] text-muted-foreground/60 mt-1">{n.time}</p>
+                      </div>
+                      {!n.read && <span className="w-1.5 h-1.5 rounded-full bg-primary shrink-0 mt-1.5" />}
+                    </div>
+                  ))
+                )}
+              </div>
+
+              {/* Footer */}
+              <div className="border-t border-border px-3 py-2 text-center">
+                <button className="text-[11px] font-medium text-primary hover:underline">
+                  View all notifications
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+
         <div className="hidden sm:flex items-center gap-2.5 border border-border rounded-lg px-3 py-1.5">
           <div className="text-right leading-tight">
             <p className="text-sm font-medium text-foreground">{user?.displayName || "System Administrator"}</p>
