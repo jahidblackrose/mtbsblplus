@@ -12,7 +12,7 @@ export default function AppLayout({ children }: AppLayoutProps) {
     <SidebarProvider>
       <div className="app-shell">
         <AppSidebar />
-        <div className="app-main">
+        <div className="app-main overflow-y-auto scrollbar-none">
           <TopBar />
           <main className="flex-1 p-4 overflow-x-hidden">{children}</main>
           <footer className="border-t border-border px-4 py-2.5 flex items-center justify-between">
