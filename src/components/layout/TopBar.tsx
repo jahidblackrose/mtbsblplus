@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import { ChevronLeft, Search, Bell, LogOut, Check, Info, AlertTriangle, X } from "lucide-react";
+import { ChevronLeft, Search, Bell, LogOut, Check, Info, AlertTriangle, X, FileText } from "lucide-react";
 import { useSidebarState } from "@/hooks/use-sidebar-state";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useAuthStore } from "@/stores/authStore";
