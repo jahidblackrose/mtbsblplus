@@ -105,26 +105,10 @@ export default function TopBar() {
         </div>
       </div>
 
-      {/* Center: Search */}
-      <div className="relative hidden sm:block flex-1 max-w-md mx-6">
-        <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
-        <input
-          type="text"
-          placeholder="Search"
-          className="h-9 w-full rounded-lg border border-border bg-muted/50 pl-9 pr-3 text-sm outline-none focus:ring-2 focus:ring-ring placeholder:text-muted-foreground"
-        />
-      </div>
 
       {/* Right: App ID badge, bell, user, logout */}
       <div className="flex items-center gap-3">
         {/* Application ID Badge */}
-        {location.pathname.startsWith("/applications/") && (
-          <div className="hidden sm:flex items-center gap-1.5 bg-primary/10 border border-primary/20 rounded-lg px-2.5 py-1.5">
-            <FileText size={13} className="text-primary" />
-            <span className="text-[11px] font-semibold text-primary tracking-wide">App. Id -</span>
-            <span className="text-[12px] font-bold text-foreground">SBL001</span>
-          </div>
-        )}
         {/* Notification Bell */}
         <div className="relative" ref={notifRef}>
           <button

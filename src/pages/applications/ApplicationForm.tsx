@@ -268,7 +268,7 @@ const ApplicationForm: React.FC = () => {
                     </h2>
                     <p className="text-[length:var(--font-size-xs)] text-muted-foreground mt-0.5">{tabConfig.subtitle}</p>
                   </div>
-                  <div className="flex-1 overflow-x-auto">
+                  <div className="flex-1 flex items-center gap-3 overflow-x-auto">
                     <div className="flex items-center gap-1.5 min-w-[28rem]">
                       {tabs.map((tab, i) => (
                         <button
@@ -287,6 +287,10 @@ const ApplicationForm: React.FC = () => {
                           {i + 1}
                         </button>
                       ))}
+                    </div>
+                    <div className="ml-auto shrink-0 flex items-center gap-1.5 bg-primary/10 border border-primary/20 rounded-lg px-2.5 py-1.5">
+                      <span className="text-[11px] font-semibold text-primary">App. Id. -</span>
+                      <span className="text-[12px] font-bold text-foreground">SBL001</span>
                     </div>
                   </div>
                 </div>
