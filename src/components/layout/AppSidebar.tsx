@@ -64,7 +64,7 @@ function NavSection({ title, items }: { title: string; items: NavItem[] }) {
 }
 
 export default function AppSidebar() {
-  const { open, close } = useSidebarState();
+  const { open, collapsed, close } = useSidebarState();
   const user = useAuthStore((s) => s.user);
 
   return (
@@ -75,7 +75,8 @@ export default function AppSidebar() {
 
       <aside
         className={cn(
-          "fixed md:static z-50 top-0 left-0 h-full w-[var(--sidebar-width)] bg-sidebar border-r border-sidebar-border flex flex-col shrink-0 transition-transform duration-200 ease-in-out",
+          "fixed md:static z-50 top-0 left-0 h-full bg-sidebar border-r border-sidebar-border flex flex-col shrink-0 transition-all duration-200 ease-in-out",
+          collapsed ? "md:w-0 md:border-0 md:overflow-hidden" : "w-[var(--sidebar-width)]",
           open ? "translate-x-0" : "-translate-x-full md:translate-x-0"
         )}
       >
