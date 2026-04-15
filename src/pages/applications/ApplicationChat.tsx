@@ -89,7 +89,7 @@ export default function ApplicationChat() {
       id: Date.now().toString(),
       applicationId: id || "",
       senderType: "user",
-      senderName: user?.name || "You",
+      senderName: user?.displayName || user?.username || "You",
       message: trimmed,
       filePath: file ? URL.createObjectURL(file) : undefined,
       fileName: file?.name,
