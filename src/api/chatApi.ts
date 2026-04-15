@@ -9,6 +9,7 @@ export interface ChatMessage {
   filePath?: string;
   fileName?: string;
   fileSize?: number;
+  isRead: boolean;
   createdAt: string;
 }
 
@@ -18,6 +19,11 @@ export interface SendMessagePayload {
   senderName: string;
   message: string;
   file?: File;
+}
+
+export interface UnreadCount {
+  applicationId: string;
+  count: number;
 }
 
 const ALLOWED_FILE_TYPES = [
@@ -54,4 +60,14 @@ export async function sendMessage(payload: SendMessagePayload): Promise<ChatMess
 
 export async function downloadFile(filePath: string): Promise<Blob> {
   return http.get(`/chat/file`, { params: { path: filePath }, responseType: "blob" });
+}
+
+/** Fetch unread message counts for multiple applications */
+export async function fetchUnreadCounts(applicationIds: string[]): Promise<UnreadCount[]> {
+  return http.post("/chat/unread-counts", { applicationIds });
+}
+
+/** Mark all messages as read for a given application */
+export async function markAsRead(applicationId: string): Promise<void> {
+  return http.post(`/chat/${applicationId}/mark-read`);
 }

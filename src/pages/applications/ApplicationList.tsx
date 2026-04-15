@@ -5,6 +5,8 @@ import { PageHeader, PageTable, StatusBadge, FilterBar } from "@/components/comm
 import { Button } from "@/components/ui/button";
 import { FormSelect } from "@/components/common/FormControls";
 import { MessageCircle } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { cn } from "@/lib/utils";
 
 const demoData = [
   { id: "SBL-2026-001", business: "Khan Denim Ltd", cif: "CIF-10234", branch: "Mirpur-2", status: "CRM Review", limit: "35.00", date: "2026-04-01" },
@@ -16,13 +18,45 @@ const demoData = [
   { id: "SBL-2026-007", business: "Sunrise Pvt.", cif: "CIF-10803", branch: "Banani", status: "Draft", limit: "12.00", date: "2026-04-07" },
 ];
 
+// Demo unread counts (replace with API: fetchUnreadCounts)
+const demoUnreadCounts: Record<string, number> = {
+  "SBL-2026-001": 3,
+  "SBL-2026-002": 0,
+  "SBL-2026-003": 12,
+  "SBL-2026-004": 1,
+  "SBL-2026-005": 0,
+  "SBL-2026-006": 150,
+  "SBL-2026-007": 0,
+};
+
 const statusBadge = (s: string) => {
   const v = s.includes("Approved") || s === "Disbursed" ? "success" : s === "Query" ? "warning" : s === "Draft" ? "outline" : "default";
   return <StatusBadge variant={v as any}>{s}</StatusBadge>;
 };
 
+function formatUnreadCount(count: number): string {
+  return count > 99 ? "99+" : String(count);
+}
+
+function ChatIconWithBadge({ appId, count }: { appId: string; count: number }) {
+  return (
+    <Link to={`/applications/${appId}/chat`} title="Open Chat">
+      <Button variant="ghost" size="icon" className="h-7 w-7 text-primary hover:text-primary/80 relative">
+        <MessageCircle className="h-4 w-4" />
+        {count > 0 && (
+          <span className="absolute -top-1 -left-1 flex items-center justify-center min-w-[16px] h-4 px-1 rounded-full bg-destructive text-destructive-foreground text-[10px] font-bold leading-none">
+            {formatUnreadCount(count)}
+          </span>
+        )}
+      </Button>
+    </Link>
+  );
+}
+
 export default function ApplicationList() {
   const [statusFilter, setStatusFilter] = useState("");
+  // In production, fetch from API: const { data: unreadCounts } = useQuery(...)
+  const [unreadCounts] = useState(demoUnreadCounts);
 
   const filtered = statusFilter ? demoData.filter((d) => d.status === statusFilter) : demoData;
 
@@ -65,11 +99,7 @@ export default function ApplicationList() {
             { key: "limit", label: "Limit (Lac)", align: "right" },
             { key: "date", label: "Date" },
             { key: "action", label: "Action", render: (r) => (
-              <Link to={`/applications/${r.id}/chat`} title="Open Chat">
-                <Button variant="ghost" size="icon" className="h-7 w-7 text-primary hover:text-primary/80">
-                  <MessageCircle className="h-4 w-4" />
-                </Button>
-              </Link>
+              <ChatIconWithBadge appId={r.id} count={unreadCounts[r.id] || 0} />
             )},
           ]}
           data={filtered}

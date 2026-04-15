@@ -1,5 +1,5 @@
 import jsPDF from "jspdf";
-import "jspdf-autotable";
+import autoTable from "jspdf-autotable";
 import letterHeaderImg from "@/assets/letter_header.png";
 import letterFooterImg from "@/assets/letter_footer.png";
 
