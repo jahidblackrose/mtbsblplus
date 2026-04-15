@@ -4,9 +4,8 @@ import AppLayout from "@/components/layout/AppLayout";
 import { PageHeader } from "@/components/common/PageComponents";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { ArrowLeft, Send, Paperclip, FileText, X, Download, User, Headset } from "lucide-react";
+import { ArrowLeft, Send, Paperclip, FileText, X, Download, User, Headset, CheckCheck } from "lucide-react";
 import { ChatMessage, validateFile } from "@/api/chatApi";
 import { useAuthStore } from "@/stores/authStore";
 import { toast } from "sonner";
@@ -14,12 +13,12 @@ import { cn } from "@/lib/utils";
 
 // Demo messages for preview (replace with API calls)
 const generateDemoMessages = (appId: string): ChatMessage[] => [
-  { id: "1", applicationId: appId, senderType: "user", senderName: "Md. Rahman", message: "I have submitted all the required documents for my SBL application.", createdAt: "2026-04-10T09:15:00Z" },
-  { id: "2", applicationId: appId, senderType: "backoffice", senderName: "CRM Officer", message: "Thank you, Mr. Rahman. We have received your documents. We are currently reviewing your CIF details.", createdAt: "2026-04-10T09:22:00Z" },
-  { id: "3", applicationId: appId, senderType: "user", senderName: "Md. Rahman", message: "Please let me know if anything else is needed.", createdAt: "2026-04-10T09:30:00Z" },
-  { id: "4", applicationId: appId, senderType: "backoffice", senderName: "CRM Officer", message: "We need an updated trade license. Please upload a scanned copy.", createdAt: "2026-04-10T10:05:00Z" },
-  { id: "5", applicationId: appId, senderType: "user", senderName: "Md. Rahman", message: "Here is the updated trade license.", filePath: "/files/trade-license.pdf", fileName: "trade-license.pdf", fileSize: 1240000, createdAt: "2026-04-10T10:45:00Z" },
-  { id: "6", applicationId: appId, senderType: "backoffice", senderName: "CRM Officer", message: "Received. Your application is now moved to CIB verification stage.", createdAt: "2026-04-10T11:00:00Z" },
+  { id: "1", applicationId: appId, senderType: "user", senderName: "Md. Rahman", message: "I have submitted all the required documents for my SBL application.", isRead: true, createdAt: "2026-04-10T09:15:00Z" },
+  { id: "2", applicationId: appId, senderType: "backoffice", senderName: "CRM Officer", message: "Thank you, Mr. Rahman. We have received your documents. We are currently reviewing your CIF details.", isRead: true, createdAt: "2026-04-10T09:22:00Z" },
+  { id: "3", applicationId: appId, senderType: "user", senderName: "Md. Rahman", message: "Please let me know if anything else is needed.", isRead: true, createdAt: "2026-04-10T09:30:00Z" },
+  { id: "4", applicationId: appId, senderType: "backoffice", senderName: "CRM Officer", message: "We need an updated trade license. Please upload a scanned copy.", isRead: true, createdAt: "2026-04-10T10:05:00Z" },
+  { id: "5", applicationId: appId, senderType: "user", senderName: "Md. Rahman", message: "Here is the updated trade license.", filePath: "/files/trade-license.pdf", fileName: "trade-license.pdf", fileSize: 1240000, isRead: true, createdAt: "2026-04-10T10:45:00Z" },
+  { id: "6", applicationId: appId, senderType: "backoffice", senderName: "CRM Officer", message: "Received. Your application is now moved to CIB verification stage.", isRead: false, createdAt: "2026-04-10T11:00:00Z" },
 ];
 
 function formatTime(iso: string) {
@@ -64,7 +63,12 @@ export default function ApplicationChat() {
   const user = useAuthStore((s) => s.user);
 
   useEffect(() => {
-    if (id) setMessages(generateDemoMessages(id));
+    if (id) {
+      const msgs = generateDemoMessages(id);
+      setMessages(msgs);
+      // Mark all as read on open (replace with API: markAsRead(id))
+      // markAsRead(id);
+    }
   }, [id]);
 
   useEffect(() => {
@@ -84,7 +88,6 @@ export default function ApplicationChat() {
     if (!trimmed && !file) return;
     setSending(true);
 
-    // Demo: add locally (replace with API call)
     const newMsg: ChatMessage = {
       id: Date.now().toString(),
       applicationId: id || "",
@@ -94,6 +97,7 @@ export default function ApplicationChat() {
       filePath: file ? URL.createObjectURL(file) : undefined,
       fileName: file?.name,
       fileSize: file?.size,
+      isRead: true,
       createdAt: new Date().toISOString(),
     };
     setMessages((prev) => [...prev, newMsg]);
@@ -211,9 +215,12 @@ function MessageBubble({ message: m }: { message: ChatMessage }) {
             <Download className="h-3.5 w-3.5 shrink-0" />
           </a>
         )}
-        <p className={cn("text-[10px] mt-1 text-right", isUser ? "text-muted-foreground" : "text-primary-foreground/60")}>
-          {formatTime(m.createdAt)}
-        </p>
+        <div className={cn("flex items-center gap-1 mt-1 justify-end", isUser ? "text-muted-foreground" : "text-primary-foreground/60")}>
+          <span className="text-[10px]">{formatTime(m.createdAt)}</span>
+          {isUser && (
+            <CheckCheck className={cn("h-3 w-3", m.isRead ? "text-blue-500" : "opacity-50")} />
+          )}
+        </div>
       </div>
     </div>
   );

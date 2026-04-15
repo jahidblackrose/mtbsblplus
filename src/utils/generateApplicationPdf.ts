@@ -1,5 +1,5 @@
 import jsPDF from "jspdf";
-import "jspdf-autotable";
+import autoTable from "jspdf-autotable";
 import letterHeaderImg from "@/assets/letter_header.png";
 import letterFooterImg from "@/assets/letter_footer.png";
 
@@ -79,7 +79,7 @@ export function generateApplicationPdf(app: ApplicationData) {
     ["Key Person", app.keyPerson || "—"],
   ];
 
-  (doc as any).autoTable({
+  autoTable(doc, {
     startY: y,
     head: [["Field", "Value"]],
     body: details,
