@@ -14,6 +14,7 @@ import Index from "./pages/Index";
 import ApplicationList from "./pages/applications/ApplicationList";
 import ApplicationForm from "./pages/applications/ApplicationForm";
 import ApplicationView from "./pages/applications/ApplicationView";
+import ApplicationChat from "./pages/applications/ApplicationChat";
 import WorkflowPage from "./pages/workflow/WorkflowPage";
 import ReportsPage from "./pages/reports/ReportsPage";
 import MastersPage from "./pages/masters/MastersPage";
@@ -41,6 +42,7 @@ function AppRoutes() {
       <Route path="/applications/new" element={<ProtectedRoute><ApplicationForm /></ProtectedRoute>} />
       <Route path="/applications/:id" element={<ProtectedRoute><ApplicationView /></ProtectedRoute>} />
       <Route path="/applications/:id/edit" element={<ProtectedRoute><ApplicationForm /></ProtectedRoute>} />
+      <Route path="/applications/:id/chat" element={<ProtectedRoute><ApplicationChat /></ProtectedRoute>} />
       <Route path="/workflow" element={<Navigate to="/workflow/crm" replace />} />
       <Route path="/workflow/:tab" element={<ProtectedRoute><WorkflowPage /></ProtectedRoute>} />
       <Route path="/reports" element={<Navigate to="/reports/pending" replace />} />

@@ -4,6 +4,7 @@ import AppLayout from "@/components/layout/AppLayout";
 import { PageHeader, PageTable, StatusBadge, FilterBar } from "@/components/common/PageComponents";
 import { Button } from "@/components/ui/button";
 import { FormSelect } from "@/components/common/FormControls";
+import { MessageCircle } from "lucide-react";
 
 const demoData = [
   { id: "SBL-2026-001", business: "Khan Denim Ltd", cif: "CIF-10234", branch: "Mirpur-2", status: "CRM Review", limit: "35.00", date: "2026-04-01" },
@@ -63,6 +64,13 @@ export default function ApplicationList() {
             { key: "status", label: "Status", render: (r) => statusBadge(r.status) },
             { key: "limit", label: "Limit (Lac)", align: "right" },
             { key: "date", label: "Date" },
+            { key: "action", label: "Action", render: (r) => (
+              <Link to={`/applications/${r.id}/chat`} title="Open Chat">
+                <Button variant="ghost" size="icon" className="h-7 w-7 text-primary hover:text-primary/80">
+                  <MessageCircle className="h-4 w-4" />
+                </Button>
+              </Link>
+            )},
           ]}
           data={filtered}
         />
