@@ -79,7 +79,7 @@ export function generateApplicationPdf(app: ApplicationData) {
     ["Key Person", app.keyPerson || "—"],
   ];
 
-  (doc as any).autoTable({
+  autoTable(doc, {
     startY: y,
     head: [["Field", "Value"]],
     body: details,
