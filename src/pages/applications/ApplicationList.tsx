@@ -41,10 +41,10 @@ function formatUnreadCount(count: number): string {
 function ChatIconWithBadge({ appId, count }: { appId: string; count: number }) {
   return (
     <Link to={`/applications/${appId}/chat`} title="Open Chat">
-      <Button variant="ghost" size="icon" className="h-7 w-7 text-primary hover:text-primary/80 relative">
-        <MessageCircle className="h-4 w-4" />
+      <Button variant="ghost" size="icon" className="h-8 w-8 text-primary hover:text-primary/80 relative">
+        <MessageCircle className="h-5 w-5" />
         {count > 0 && (
-          <span className="absolute -top-1 -left-1 flex items-center justify-center min-w-[16px] h-4 px-1 rounded-full bg-destructive text-destructive-foreground text-[10px] font-bold leading-none">
+          <span className="absolute -top-1.5 -left-1.5 flex items-center justify-center min-w-[14px] h-3.5 px-0.5 rounded-full bg-destructive text-destructive-foreground text-[8px] font-bold leading-none">
             {formatUnreadCount(count)}
           </span>
         )}
