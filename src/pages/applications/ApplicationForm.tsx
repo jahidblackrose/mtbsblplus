@@ -183,6 +183,8 @@ const ApplicationForm: React.FC = () => {
   ]);
   const [currentSister, setCurrentSister] = useState<SisterAlliedConcernRecord>({ ...emptySister });
   const [sisters, setSisters] = useState<SisterAlliedConcernRecord[]>([]);
+  const [currentGuarantor, setCurrentGuarantor] = useState<PersonalGuarantor>({ ...emptyGuarantor });
+  const [guarantors, setGuarantors] = useState<PersonalGuarantor[]>([]);
   const [amlCft, setAmlCft] = useState<AmlCftDeclarationRow[]>([
     { serialNo: 1, declaration: "CDD has been completed during account opening of the customer", status: "yes", remarks: "" },
     { serialNo: 2, declaration: "All necessary documents in establishing the clients legitimacy have been obtained", status: "yes", remarks: "" },
@@ -251,6 +253,7 @@ const ApplicationForm: React.FC = () => {
   const updatePremise = (f: keyof PremiseOwnershipRecord, v: string) => setCurrentPremise((p) => ({ ...p, [f]: v }));
   const updateOtherBiz = (f: keyof OtherBusinessInformation, v: string) => setOtherBiz((p) => ({ ...p, [f]: v }));
   const updateSister = (f: keyof SisterAlliedConcernRecord, v: string) => setCurrentSister((p) => ({ ...p, [f]: v }));
+  const updateGuarantor = (f: keyof PersonalGuarantor, v: string) => setCurrentGuarantor((p) => ({ ...p, [f]: v }));
 
   return (
     <AppLayout>
