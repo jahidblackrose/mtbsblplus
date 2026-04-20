@@ -185,6 +185,7 @@ const ApplicationForm: React.FC = () => {
   const [sisters, setSisters] = useState<SisterAlliedConcernRecord[]>([]);
   const [currentGuarantor, setCurrentGuarantor] = useState<PersonalGuarantor>({ ...emptyGuarantor });
   const [guarantors, setGuarantors] = useState<PersonalGuarantor[]>([]);
+  const [editingGuarantorIndex, setEditingGuarantorIndex] = useState<number | null>(null);
   const [amlCft, setAmlCft] = useState<AmlCftDeclarationRow[]>([
     { serialNo: 1, declaration: "CDD has been completed during account opening of the customer", status: "yes", remarks: "" },
     { serialNo: 2, declaration: "All necessary documents in establishing the clients legitimacy have been obtained", status: "yes", remarks: "" },
@@ -740,18 +741,43 @@ const ApplicationForm: React.FC = () => {
                         <FormInput label="Expiry Date" type="date" value={currentGuarantor.cibExpiryDate} onChange={(e) => updateGuarantor("cibExpiryDate", e.target.value)} />
                         <FormSelect label="Status" name="guarantorCibStatus" value={currentGuarantor.cibStatus} onChange={(e) => updateGuarantor("cibStatus", e.target.value)} options={[{ value: "clean", label: "Clean" }, { value: "standard", label: "Standard" }, { value: "sma", label: "SMA" }, { value: "sub_standard", label: "Sub-Standard" }, { value: "doubtful", label: "Doubtful" }, { value: "bad_loss", label: "Bad/Loss" }]} />
                       </div>
-                      <AddButton
-                        onClick={() => {
-                          if (!currentGuarantor.name && !currentGuarantor.nid) {
-                            toast.warning("Enter at least Name or NID before adding");
-                            return;
-                          }
-                          setGuarantors((p) => [...p, currentGuarantor]);
-                          setCurrentGuarantor({ ...emptyGuarantor });
-                          toast.success("Guarantor added");
-                        }}
-                        label="Add Guarantor"
-                      />
+                      <div className="flex justify-end gap-2 mt-3">
+                        {editingGuarantorIndex !== null && (
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => {
+                              setCurrentGuarantor({ ...emptyGuarantor });
+                              setEditingGuarantorIndex(null);
+                            }}
+                          >
+                            Cancel
+                          </Button>
+                        )}
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          onClick={() => {
+                            if (!currentGuarantor.name && !currentGuarantor.nid) {
+                              toast.warning("Enter at least Name or NID before saving");
+                              return;
+                            }
+                            if (editingGuarantorIndex !== null) {
+                              setGuarantors((p) => p.map((g, i) => (i === editingGuarantorIndex ? currentGuarantor : g)));
+                              toast.success("Guarantor updated");
+                              setEditingGuarantorIndex(null);
+                            } else {
+                              setGuarantors((p) => [...p, currentGuarantor]);
+                              toast.success("Guarantor added");
+                            }
+                            setCurrentGuarantor({ ...emptyGuarantor });
+                          }}
+                        >
+                          {editingGuarantorIndex !== null ? "Update Guarantor" : "Add Guarantor"}
+                        </Button>
+                      </div>
                       {guarantors.length > 0 && (
                         <DataTable
                           className="mt-3"
@@ -760,10 +786,11 @@ const ApplicationForm: React.FC = () => {
                             { label: "Gender" }, { label: "Relationship" }, { label: "Profession" },
                             { label: "Mobile" }, { label: "PNW (M)", align: "right" }, { label: "Funded Limit", align: "right" },
                             { label: "CIB Code" }, { label: "CIB Inquiry" }, { label: "CIB Expiry" }, { label: "CIB Status" },
+                            { label: "Actions", align: "center" },
                           ]}
                         >
                           {guarantors.map((g, i) => (
-                            <tr key={i}>
+                            <tr key={i} className={editingGuarantorIndex === i ? "bg-primary/5" : undefined}>
                               <Td>{i + 1}</Td>
                               <Td>{g.name}</Td>
                               <Td>{g.nid}</Td>
@@ -778,6 +805,39 @@ const ApplicationForm: React.FC = () => {
                               <Td>{g.cibInquiryDate}</Td>
                               <Td>{g.cibExpiryDate}</Td>
                               <Td>{g.cibStatus}</Td>
+                              <Td align="center">
+                                <div className="flex items-center justify-center gap-1">
+                                  <Button
+                                    type="button"
+                                    variant="ghost"
+                                    size="sm"
+                                    className="h-7 px-2 text-primary hover:text-primary"
+                                    onClick={() => {
+                                      setCurrentGuarantor({ ...g });
+                                      setEditingGuarantorIndex(i);
+                                      toast.info("Editing guarantor — update fields and click Update");
+                                    }}
+                                  >
+                                    Edit
+                                  </Button>
+                                  <Button
+                                    type="button"
+                                    variant="ghost"
+                                    size="sm"
+                                    className="h-7 px-2 text-destructive hover:text-destructive"
+                                    onClick={() => {
+                                      setGuarantors((p) => p.filter((_, idx) => idx !== i));
+                                      if (editingGuarantorIndex === i) {
+                                        setCurrentGuarantor({ ...emptyGuarantor });
+                                        setEditingGuarantorIndex(null);
+                                      }
+                                      toast.success("Guarantor removed");
+                                    }}
+                                  >
+                                    Delete
+                                  </Button>
+                                </div>
+                              </Td>
                             </tr>
                           ))}
                         </DataTable>
