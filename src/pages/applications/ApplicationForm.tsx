@@ -78,6 +78,7 @@ const tabs: { id: TabId; label: string; subtitle: string }[] = [
   { id: "bank-finance-requirement", label: "Bank Finance Requirement For W/C", subtitle: "Update Current Yr. and Proj. Yr. values." },
   { id: "sister-allied-concern", label: "Particulars Of Sister/Allied Concern", subtitle: "One-to-many section." },
   { id: "aml-cft-declaration", label: "AML/CFT Declaration/Check List", subtitle: "Status: Yes / No / N/A. Remarks editable." },
+  { id: "personal-guarantors", label: "Personal Guarantor(s)", subtitle: "Add one or more personal guarantors with CIB info (one-to-many)." },
 ];
 
 const bangladeshBanks = [
@@ -94,6 +95,24 @@ const emptyBankRecord: BankTransactionRecord = { bankName: "", accountName: "", 
 const emptyPrevLoan: PreviousLoanClosingRecord = { fiName: "", accountName: "", facilityType: "", initialSanctionDate: "", initialSanctionLimit: "", lastSanctionDate: "", lastSanctionLimit: "", closingDate: "", closingType: "" };
 const emptyPremise: PremiseOwnershipRecord = { premiseType: "", address: "", areaSft: "", ownershipStatus: "", supportingDocuments: "", deedValidity: "" };
 const emptySister: SisterAlliedConcernRecord = { concernName: "", businessNature: "", legalForm: "", sharePercentage: "", businessSince: "", totalInvestment: "", bankLiability: "", equity: "", turnover: "", profit: "" };
+const emptyGuarantor: PersonalGuarantor = {
+  name: "", nid: "", dob: "", districtOfBirth: "", gender: "", relationshipWithKeyBorrower: "",
+  profession: "", residenceStatus: "", businessName: "", pnwMil: "", fundedLoanLimit: "",
+  fatherName: "", motherName: "", spouseName: "", mobileNo: "",
+  presentAddress: "", presentDistrict: "", presentPostCode: "",
+  permanentAddress: "", permanentDistrict: "", permanentPostCode: "",
+  cibCode: "", cibInquiryDate: "", cibExpiryDate: "", cibStatus: "",
+};
+
+const bdDistricts = [
+  "Bagerhat","Bandarban","Barguna","Barisal","Bhola","Bogra","Brahmanbaria","Chandpur","Chapainawabganj","Chittagong",
+  "Chuadanga","Comilla","Cox's Bazar","Dhaka","Dinajpur","Faridpur","Feni","Gaibandha","Gazipur","Gopalganj",
+  "Habiganj","Jamalpur","Jessore","Jhalokati","Jhenaidah","Joypurhat","Khagrachhari","Khulna","Kishoreganj","Kurigram",
+  "Kushtia","Lakshmipur","Lalmonirhat","Madaripur","Magura","Manikganj","Meherpur","Moulvibazar","Munshiganj","Mymensingh",
+  "Naogaon","Narail","Narayanganj","Narsingdi","Natore","Netrokona","Nilphamari","Noakhali","Pabna","Panchagarh",
+  "Patuakhali","Pirojpur","Rajbari","Rajshahi","Rangamati","Rangpur","Satkhira","Shariatpur","Sherpur","Sirajganj",
+  "Sunamganj","Sylhet","Tangail","Thakurgaon",
+].map((d) => ({ value: d, label: d }));
 
 /* ─── Helpers ─── */
 const SectionDivider = ({ title }: { title: string }) => (
