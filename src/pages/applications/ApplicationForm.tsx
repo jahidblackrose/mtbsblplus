@@ -52,9 +52,18 @@ interface SisterAlliedConcernRecord {
   equity: string; turnover: string; profit: string;
 }
 interface AmlCftDeclarationRow { serialNo: number; declaration: string; status: "yes" | "no" | "na"; remarks: string; }
+interface PersonalGuarantor {
+  name: string; nid: string; dob: string; districtOfBirth: string; gender: string;
+  relationshipWithKeyBorrower: string; profession: string; residenceStatus: string;
+  businessName: string; pnwMil: string; fundedLoanLimit: string;
+  fatherName: string; motherName: string; spouseName: string; mobileNo: string;
+  presentAddress: string; presentDistrict: string; presentPostCode: string;
+  permanentAddress: string; permanentDistrict: string; permanentPostCode: string;
+  cibCode: string; cibInquiryDate: string; cibExpiryDate: string; cibStatus: string;
+}
 
 /* ─── Static data ─── */
-type TabId = "summary" | "documents" | "history" | "bank" | "previous-close-loan" | "key-person-information" | "owner-information" | "premise-ownership" | "other-business-information" | "bank-finance-requirement" | "sister-allied-concern" | "aml-cft-declaration";
+type TabId = "summary" | "documents" | "history" | "bank" | "previous-close-loan" | "key-person-information" | "owner-information" | "premise-ownership" | "other-business-information" | "bank-finance-requirement" | "sister-allied-concern" | "aml-cft-declaration" | "personal-guarantors";
 
 const tabs: { id: TabId; label: string; subtitle: string }[] = [
   { id: "summary", label: "Summary", subtitle: "Capture core application summary details." },
@@ -69,6 +78,7 @@ const tabs: { id: TabId; label: string; subtitle: string }[] = [
   { id: "bank-finance-requirement", label: "Bank Finance Requirement For W/C", subtitle: "Update Current Yr. and Proj. Yr. values." },
   { id: "sister-allied-concern", label: "Particulars Of Sister/Allied Concern", subtitle: "One-to-many section." },
   { id: "aml-cft-declaration", label: "AML/CFT Declaration/Check List", subtitle: "Status: Yes / No / N/A. Remarks editable." },
+  { id: "personal-guarantors", label: "Personal Guarantor(s)", subtitle: "Add one or more personal guarantors with CIB info (one-to-many)." },
 ];
 
 const bangladeshBanks = [
@@ -85,6 +95,24 @@ const emptyBankRecord: BankTransactionRecord = { bankName: "", accountName: "", 
 const emptyPrevLoan: PreviousLoanClosingRecord = { fiName: "", accountName: "", facilityType: "", initialSanctionDate: "", initialSanctionLimit: "", lastSanctionDate: "", lastSanctionLimit: "", closingDate: "", closingType: "" };
 const emptyPremise: PremiseOwnershipRecord = { premiseType: "", address: "", areaSft: "", ownershipStatus: "", supportingDocuments: "", deedValidity: "" };
 const emptySister: SisterAlliedConcernRecord = { concernName: "", businessNature: "", legalForm: "", sharePercentage: "", businessSince: "", totalInvestment: "", bankLiability: "", equity: "", turnover: "", profit: "" };
+const emptyGuarantor: PersonalGuarantor = {
+  name: "", nid: "", dob: "", districtOfBirth: "", gender: "", relationshipWithKeyBorrower: "",
+  profession: "", residenceStatus: "", businessName: "", pnwMil: "", fundedLoanLimit: "",
+  fatherName: "", motherName: "", spouseName: "", mobileNo: "",
+  presentAddress: "", presentDistrict: "", presentPostCode: "",
+  permanentAddress: "", permanentDistrict: "", permanentPostCode: "",
+  cibCode: "", cibInquiryDate: "", cibExpiryDate: "", cibStatus: "",
+};
+
+const bdDistricts = [
+  "Bagerhat","Bandarban","Barguna","Barisal","Bhola","Bogra","Brahmanbaria","Chandpur","Chapainawabganj","Chittagong",
+  "Chuadanga","Comilla","Cox's Bazar","Dhaka","Dinajpur","Faridpur","Feni","Gaibandha","Gazipur","Gopalganj",
+  "Habiganj","Jamalpur","Jessore","Jhalokati","Jhenaidah","Joypurhat","Khagrachhari","Khulna","Kishoreganj","Kurigram",
+  "Kushtia","Lakshmipur","Lalmonirhat","Madaripur","Magura","Manikganj","Meherpur","Moulvibazar","Munshiganj","Mymensingh",
+  "Naogaon","Narail","Narayanganj","Narsingdi","Natore","Netrokona","Nilphamari","Noakhali","Pabna","Panchagarh",
+  "Patuakhali","Pirojpur","Rajbari","Rajshahi","Rangamati","Rangpur","Satkhira","Shariatpur","Sherpur","Sirajganj",
+  "Sunamganj","Sylhet","Tangail","Thakurgaon",
+].map((d) => ({ value: d, label: d }));
 
 /* ─── Helpers ─── */
 const SectionDivider = ({ title }: { title: string }) => (
@@ -155,6 +183,8 @@ const ApplicationForm: React.FC = () => {
   ]);
   const [currentSister, setCurrentSister] = useState<SisterAlliedConcernRecord>({ ...emptySister });
   const [sisters, setSisters] = useState<SisterAlliedConcernRecord[]>([]);
+  const [currentGuarantor, setCurrentGuarantor] = useState<PersonalGuarantor>({ ...emptyGuarantor });
+  const [guarantors, setGuarantors] = useState<PersonalGuarantor[]>([]);
   const [amlCft, setAmlCft] = useState<AmlCftDeclarationRow[]>([
     { serialNo: 1, declaration: "CDD has been completed during account opening of the customer", status: "yes", remarks: "" },
     { serialNo: 2, declaration: "All necessary documents in establishing the clients legitimacy have been obtained", status: "yes", remarks: "" },
@@ -223,6 +253,7 @@ const ApplicationForm: React.FC = () => {
   const updatePremise = (f: keyof PremiseOwnershipRecord, v: string) => setCurrentPremise((p) => ({ ...p, [f]: v }));
   const updateOtherBiz = (f: keyof OtherBusinessInformation, v: string) => setOtherBiz((p) => ({ ...p, [f]: v }));
   const updateSister = (f: keyof SisterAlliedConcernRecord, v: string) => setCurrentSister((p) => ({ ...p, [f]: v }));
+  const updateGuarantor = (f: keyof PersonalGuarantor, v: string) => setCurrentGuarantor((p) => ({ ...p, [f]: v }));
 
   return (
     <AppLayout>
@@ -669,9 +700,91 @@ const ApplicationForm: React.FC = () => {
                       </table>
                     </div>
                   )}
-                </div>
 
-                {/* Footer nav */}
+                  {/* Tab 13: Personal Guarantor(s) */}
+                  {activeTab === "personal-guarantors" && (
+                    <>
+                      <div className="form-grid">
+                        <SectionDivider title="Guarantor Identity" />
+                        <FormInput label="Name" placeholder="Full name" value={currentGuarantor.name} onChange={(e) => updateGuarantor("name", e.target.value)} />
+                        <FormInput label="NID" placeholder="National ID number" value={currentGuarantor.nid} onChange={(e) => updateGuarantor("nid", e.target.value)} />
+                        <FormInput label="Date of Birth" type="date" value={currentGuarantor.dob} onChange={(e) => updateGuarantor("dob", e.target.value)} />
+                        <SearchableSelect label="District of Birth" name="guarantorDistrictOfBirth" options={bdDistricts} placeholder="Search district" onValueChange={(v) => updateGuarantor("districtOfBirth", v)} />
+                        <FormSelect label="Gender" name="guarantorGender" value={currentGuarantor.gender} onChange={(e) => updateGuarantor("gender", e.target.value)} options={[{ value: "male", label: "Male" }, { value: "female", label: "Female" }, { value: "other", label: "Other" }]} />
+                        <FormInput label="Relationship with Key Borrower" placeholder="e.g. Spouse, Brother" value={currentGuarantor.relationshipWithKeyBorrower} onChange={(e) => updateGuarantor("relationshipWithKeyBorrower", e.target.value)} />
+                        <FormInput label="Profession of PG" placeholder="Profession" value={currentGuarantor.profession} onChange={(e) => updateGuarantor("profession", e.target.value)} />
+                        <FormSelect label="Residence Status" name="guarantorResidenceStatus" value={currentGuarantor.residenceStatus} onChange={(e) => updateGuarantor("residenceStatus", e.target.value)} options={[{ value: "permanent", label: "Permanent" }, { value: "rented", label: "Rented" }, { value: "owned", label: "Owned" }, { value: "family", label: "Family" }]} />
+                        <FormInput label="Business Name (if any)" placeholder="Business name" value={currentGuarantor.businessName} onChange={(e) => updateGuarantor("businessName", e.target.value)} />
+                        <FormInput label="PNW (Mil)" type="number" step="0.01" placeholder="0.00" value={currentGuarantor.pnwMil} onChange={(e) => updateGuarantor("pnwMil", e.target.value)} />
+                        <FormInput label="Funded Loan (Limit)" type="number" step="0.01" placeholder="0.00" value={currentGuarantor.fundedLoanLimit} onChange={(e) => updateGuarantor("fundedLoanLimit", e.target.value)} />
+
+                        <SectionDivider title="Family" />
+                        <FormInput label="Father Name" value={currentGuarantor.fatherName} onChange={(e) => updateGuarantor("fatherName", e.target.value)} />
+                        <FormInput label="Mother Name" value={currentGuarantor.motherName} onChange={(e) => updateGuarantor("motherName", e.target.value)} />
+                        <FormInput label="Spouse Name" value={currentGuarantor.spouseName} onChange={(e) => updateGuarantor("spouseName", e.target.value)} />
+                        <FormInput label="Mobile No." placeholder="01XXXXXXXXX" value={currentGuarantor.mobileNo} onChange={(e) => updateGuarantor("mobileNo", e.target.value)} />
+
+                        <SectionDivider title="Present Address" />
+                        <FormTextarea label="Present Address" value={currentGuarantor.presentAddress} onChange={(e) => updateGuarantor("presentAddress", e.target.value)} />
+                        <SearchableSelect label="Present District" name="guarantorPresentDistrict" options={bdDistricts} placeholder="Search district" onValueChange={(v) => updateGuarantor("presentDistrict", v)} />
+                        <FormInput label="Present Post Code" value={currentGuarantor.presentPostCode} onChange={(e) => updateGuarantor("presentPostCode", e.target.value)} />
+
+                        <SectionDivider title="Permanent Address" />
+                        <FormTextarea label="Permanent Address" value={currentGuarantor.permanentAddress} onChange={(e) => updateGuarantor("permanentAddress", e.target.value)} />
+                        <SearchableSelect label="Permanent District" name="guarantorPermanentDistrict" options={bdDistricts} placeholder="Search district" onValueChange={(v) => updateGuarantor("permanentDistrict", v)} />
+                        <FormInput label="Permanent Post Code" value={currentGuarantor.permanentPostCode} onChange={(e) => updateGuarantor("permanentPostCode", e.target.value)} />
+
+                        <SectionDivider title="CIB Information" />
+                        <FormInput label="CIB Code" placeholder="CIB code" value={currentGuarantor.cibCode} onChange={(e) => updateGuarantor("cibCode", e.target.value)} />
+                        <FormInput label="Inquiry Date" type="date" value={currentGuarantor.cibInquiryDate} onChange={(e) => updateGuarantor("cibInquiryDate", e.target.value)} />
+                        <FormInput label="Expiry Date" type="date" value={currentGuarantor.cibExpiryDate} onChange={(e) => updateGuarantor("cibExpiryDate", e.target.value)} />
+                        <FormSelect label="Status" name="guarantorCibStatus" value={currentGuarantor.cibStatus} onChange={(e) => updateGuarantor("cibStatus", e.target.value)} options={[{ value: "clean", label: "Clean" }, { value: "standard", label: "Standard" }, { value: "sma", label: "SMA" }, { value: "sub_standard", label: "Sub-Standard" }, { value: "doubtful", label: "Doubtful" }, { value: "bad_loss", label: "Bad/Loss" }]} />
+                      </div>
+                      <AddButton
+                        onClick={() => {
+                          if (!currentGuarantor.name && !currentGuarantor.nid) {
+                            toast.warning("Enter at least Name or NID before adding");
+                            return;
+                          }
+                          setGuarantors((p) => [...p, currentGuarantor]);
+                          setCurrentGuarantor({ ...emptyGuarantor });
+                          toast.success("Guarantor added");
+                        }}
+                        label="Add Guarantor"
+                      />
+                      {guarantors.length > 0 && (
+                        <DataTable
+                          className="mt-3"
+                          headers={[
+                            { label: "#" }, { label: "Name" }, { label: "NID" }, { label: "DOB" },
+                            { label: "Gender" }, { label: "Relationship" }, { label: "Profession" },
+                            { label: "Mobile" }, { label: "PNW (M)", align: "right" }, { label: "Funded Limit", align: "right" },
+                            { label: "CIB Code" }, { label: "CIB Inquiry" }, { label: "CIB Expiry" }, { label: "CIB Status" },
+                          ]}
+                        >
+                          {guarantors.map((g, i) => (
+                            <tr key={i}>
+                              <Td>{i + 1}</Td>
+                              <Td>{g.name}</Td>
+                              <Td>{g.nid}</Td>
+                              <Td>{g.dob}</Td>
+                              <Td>{g.gender}</Td>
+                              <Td>{g.relationshipWithKeyBorrower}</Td>
+                              <Td>{g.profession}</Td>
+                              <Td>{g.mobileNo}</Td>
+                              <Td align="right">{g.pnwMil}</Td>
+                              <Td align="right">{g.fundedLoanLimit}</Td>
+                              <Td>{g.cibCode}</Td>
+                              <Td>{g.cibInquiryDate}</Td>
+                              <Td>{g.cibExpiryDate}</Td>
+                              <Td>{g.cibStatus}</Td>
+                            </tr>
+                          ))}
+                        </DataTable>
+                      )}
+                    </>
+                  )}
+                </div>
                 {error && <p className="mt-3 text-[length:var(--font-size-sm)] text-destructive">{error}</p>}
                 <div className="form-actions-sticky -mx-4 -mb-4 mt-4 rounded-b-lg">
                   <Button type="button" variant="outline" onClick={handleBack} disabled={loading}>Back</Button>
