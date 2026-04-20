@@ -139,9 +139,9 @@ export default function ApplicationChat() {
         </div>
 
         {/* Messages area */}
-        <div className="flex-1 overflow-y-auto bg-[hsl(var(--muted)/0.15)] px-4 py-3" style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}>
+        <div className="chat-scroll flex-1 overflow-y-auto bg-[hsl(var(--muted)/0.15)] px-3 py-3" style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}>
           <style>{`.chat-scroll::-webkit-scrollbar{display:none}`}</style>
-          <div className="chat-scroll max-w-3xl mx-auto space-y-4">
+          <div className="w-full space-y-4">
             {dateGroups.map((group) => (
               <div key={group.date}>
                 <div className="flex justify-center my-3">
