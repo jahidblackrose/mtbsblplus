@@ -52,9 +52,18 @@ interface SisterAlliedConcernRecord {
   equity: string; turnover: string; profit: string;
 }
 interface AmlCftDeclarationRow { serialNo: number; declaration: string; status: "yes" | "no" | "na"; remarks: string; }
+interface PersonalGuarantor {
+  name: string; nid: string; dob: string; districtOfBirth: string; gender: string;
+  relationshipWithKeyBorrower: string; profession: string; residenceStatus: string;
+  businessName: string; pnwMil: string; fundedLoanLimit: string;
+  fatherName: string; motherName: string; spouseName: string; mobileNo: string;
+  presentAddress: string; presentDistrict: string; presentPostCode: string;
+  permanentAddress: string; permanentDistrict: string; permanentPostCode: string;
+  cibCode: string; cibInquiryDate: string; cibExpiryDate: string; cibStatus: string;
+}
 
 /* ─── Static data ─── */
-type TabId = "summary" | "documents" | "history" | "bank" | "previous-close-loan" | "key-person-information" | "owner-information" | "premise-ownership" | "other-business-information" | "bank-finance-requirement" | "sister-allied-concern" | "aml-cft-declaration";
+type TabId = "summary" | "documents" | "history" | "bank" | "previous-close-loan" | "key-person-information" | "owner-information" | "premise-ownership" | "other-business-information" | "bank-finance-requirement" | "sister-allied-concern" | "aml-cft-declaration" | "personal-guarantors";
 
 const tabs: { id: TabId; label: string; subtitle: string }[] = [
   { id: "summary", label: "Summary", subtitle: "Capture core application summary details." },
