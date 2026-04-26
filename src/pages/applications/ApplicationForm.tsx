@@ -743,31 +743,84 @@ const ApplicationForm: React.FC = () => {
                         <FormInput label="Name" placeholder="Full name" value={currentGuarantor.name} onChange={(e) => updateGuarantor("name", e.target.value)} />
                         <FormInput label="NID" placeholder="National ID number" value={currentGuarantor.nid} onChange={(e) => updateGuarantor("nid", e.target.value)} />
                         <FormInput label="Date of Birth" type="date" value={currentGuarantor.dob} onChange={(e) => updateGuarantor("dob", e.target.value)} />
-                        <SearchableSelect label="District of Birth" name="guarantorDistrictOfBirth" options={bdDistricts} placeholder="Search district" onValueChange={(v) => updateGuarantor("districtOfBirth", v)} />
-                        <FormSelect label="Gender" name="guarantorGender" value={currentGuarantor.gender} onChange={(e) => updateGuarantor("gender", e.target.value)} options={[{ value: "male", label: "Male" }, { value: "female", label: "Female" }, { value: "other", label: "Other" }]} />
-                        <FormInput label="Relationship with Key Borrower" placeholder="e.g. Spouse, Brother" value={currentGuarantor.relationshipWithKeyBorrower} onChange={(e) => updateGuarantor("relationshipWithKeyBorrower", e.target.value)} />
-                        <FormInput label="Profession of PG" placeholder="Profession" value={currentGuarantor.profession} onChange={(e) => updateGuarantor("profession", e.target.value)} />
-                        <FormSelect label="Residence Status" name="guarantorResidenceStatus" value={currentGuarantor.residenceStatus} onChange={(e) => updateGuarantor("residenceStatus", e.target.value)} options={[{ value: "permanent", label: "Permanent" }, { value: "rented", label: "Rented" }, { value: "owned", label: "Owned" }, { value: "family", label: "Family" }]} />
-                        <FormInput label="Business Name (if any)" placeholder="Business name" value={currentGuarantor.businessName} onChange={(e) => updateGuarantor("businessName", e.target.value)} />
-                        <FormInput label="PNW (Mil)" type="number" step="0.01" placeholder="0.00" value={currentGuarantor.pnwMil} onChange={(e) => updateGuarantor("pnwMil", e.target.value)} />
-                        <FormInput label="Funded Loan (Limit)" type="number" step="0.01" placeholder="0.00" value={currentGuarantor.fundedLoanLimit} onChange={(e) => updateGuarantor("fundedLoanLimit", e.target.value)} />
 
-                        <SectionDivider title="Family" />
-                        <FormInput label="Father Name" value={currentGuarantor.fatherName} onChange={(e) => updateGuarantor("fatherName", e.target.value)} />
-                        <FormInput label="Mother Name" value={currentGuarantor.motherName} onChange={(e) => updateGuarantor("motherName", e.target.value)} />
-                        <FormInput label="Spouse Name" value={currentGuarantor.spouseName} onChange={(e) => updateGuarantor("spouseName", e.target.value)} />
-                        <FormInput label="Mobile No." placeholder="01XXXXXXXXX" value={currentGuarantor.mobileNo} onChange={(e) => updateGuarantor("mobileNo", e.target.value)} />
+                        <div className="col-span-full -mt-1 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between rounded-md border border-dashed border-border bg-muted/30 px-3 py-2">
+                          <div className="flex items-center gap-2 text-[length:var(--font-size-sm)]">
+                            {guarantorVerifyStatus === "success" ? (
+                              <>
+                                <CheckCircle2 className="text-green-600" />
+                                <span className="font-medium text-green-700">Verification Successful</span>
+                                <span className="text-muted-foreground">— {guarantorVerifyMessage}</span>
+                              </>
+                            ) : guarantorVerifyStatus === "error" ? (
+                              <>
+                                <XCircle className="text-destructive" />
+                                <span className="font-medium text-destructive">Verification Failed</span>
+                                <span className="text-muted-foreground">— {guarantorVerifyMessage}</span>
+                              </>
+                            ) : (
+                              <>
+                                <ShieldCheck className="text-muted-foreground" />
+                                <span className="text-muted-foreground">
+                                  Verify Name, NID & DOB to unlock the remaining guarantor fields.
+                                </span>
+                              </>
+                            )}
+                          </div>
+                          <Button
+                            type="button"
+                            variant={guarantorVerifyStatus === "success" ? "secondary" : "default"}
+                            size="sm"
+                            disabled={guarantorVerifyStatus === "loading"}
+                            onClick={handleVerifyGuarantor}
+                          >
+                            {guarantorVerifyStatus === "loading" ? (
+                              <><Loader2 className="animate-spin" /> Verifying…</>
+                            ) : guarantorVerifyStatus === "success" ? (
+                              <><CheckCircle2 /> Re-verify</>
+                            ) : (
+                              <><ShieldCheck /> Verify</>
+                            )}
+                          </Button>
+                        </div>
 
-                        <SectionDivider title="Present Address" />
-                        <FormTextarea label="Present Address" value={currentGuarantor.presentAddress} onChange={(e) => updateGuarantor("presentAddress", e.target.value)} />
-                        <SearchableSelect label="Present District" name="guarantorPresentDistrict" options={bdDistricts} placeholder="Search district" onValueChange={(v) => updateGuarantor("presentDistrict", v)} />
-                        <FormInput label="Present Post Code" value={currentGuarantor.presentPostCode} onChange={(e) => updateGuarantor("presentPostCode", e.target.value)} />
+                        {(() => {
+                          const locked = guarantorVerifyStatus !== "success";
+                          return (
+                            <>
+                              <SearchableSelect label="District of Birth" name="guarantorDistrictOfBirth" options={bdDistricts} placeholder="Search district" disabled={locked} onValueChange={(v) => updateGuarantor("districtOfBirth", v)} />
+                              <FormSelect label="Gender" name="guarantorGender" disabled={locked} value={currentGuarantor.gender} onChange={(e) => updateGuarantor("gender", e.target.value)} options={[{ value: "male", label: "Male" }, { value: "female", label: "Female" }, { value: "other", label: "Other" }]} />
+                              <FormInput label="Relationship with Key Borrower" placeholder="e.g. Spouse, Brother" disabled={locked} value={currentGuarantor.relationshipWithKeyBorrower} onChange={(e) => updateGuarantor("relationshipWithKeyBorrower", e.target.value)} />
+                              <FormInput label="Profession of PG" placeholder="Profession" disabled={locked} value={currentGuarantor.profession} onChange={(e) => updateGuarantor("profession", e.target.value)} />
+                              <FormSelect label="Residence Status" name="guarantorResidenceStatus" disabled={locked} value={currentGuarantor.residenceStatus} onChange={(e) => updateGuarantor("residenceStatus", e.target.value)} options={[{ value: "permanent", label: "Permanent" }, { value: "rented", label: "Rented" }, { value: "owned", label: "Owned" }, { value: "family", label: "Family" }]} />
+                              <FormInput label="Business Name (if any)" placeholder="Business name" disabled={locked} value={currentGuarantor.businessName} onChange={(e) => updateGuarantor("businessName", e.target.value)} />
+                              <FormInput label="PNW (Mil)" type="number" step="0.01" placeholder="0.00" disabled={locked} value={currentGuarantor.pnwMil} onChange={(e) => updateGuarantor("pnwMil", e.target.value)} />
+                              <FormInput label="Funded Loan (Limit)" type="number" step="0.01" placeholder="0.00" disabled={locked} value={currentGuarantor.fundedLoanLimit} onChange={(e) => updateGuarantor("fundedLoanLimit", e.target.value)} />
 
-                        <SectionDivider title="Permanent Address" />
-                        <FormTextarea label="Permanent Address" value={currentGuarantor.permanentAddress} onChange={(e) => updateGuarantor("permanentAddress", e.target.value)} />
-                        <SearchableSelect label="Permanent District" name="guarantorPermanentDistrict" options={bdDistricts} placeholder="Search district" onValueChange={(v) => updateGuarantor("permanentDistrict", v)} />
-                        <FormInput label="Permanent Post Code" value={currentGuarantor.permanentPostCode} onChange={(e) => updateGuarantor("permanentPostCode", e.target.value)} />
+                              <SectionDivider title="Family" />
+                              <FormInput label="Father Name" disabled={locked} value={currentGuarantor.fatherName} onChange={(e) => updateGuarantor("fatherName", e.target.value)} />
+                              <FormInput label="Mother Name" disabled={locked} value={currentGuarantor.motherName} onChange={(e) => updateGuarantor("motherName", e.target.value)} />
+                              <FormInput label="Spouse Name" disabled={locked} value={currentGuarantor.spouseName} onChange={(e) => updateGuarantor("spouseName", e.target.value)} />
+                              <FormInput label="Mobile No." placeholder="01XXXXXXXXX" disabled={locked} value={currentGuarantor.mobileNo} onChange={(e) => updateGuarantor("mobileNo", e.target.value)} />
 
+                              <SectionDivider title="Present Address" />
+                              <FormTextarea label="Present Address" disabled={locked} value={currentGuarantor.presentAddress} onChange={(e) => updateGuarantor("presentAddress", e.target.value)} />
+                              <SearchableSelect label="Present District" name="guarantorPresentDistrict" options={bdDistricts} placeholder="Search district" disabled={locked} onValueChange={(v) => updateGuarantor("presentDistrict", v)} />
+                              <FormInput label="Present Post Code" disabled={locked} value={currentGuarantor.presentPostCode} onChange={(e) => updateGuarantor("presentPostCode", e.target.value)} />
+
+                              <SectionDivider title="Permanent Address" />
+                              <FormTextarea label="Permanent Address" disabled={locked} value={currentGuarantor.permanentAddress} onChange={(e) => updateGuarantor("permanentAddress", e.target.value)} />
+                              <SearchableSelect label="Permanent District" name="guarantorPermanentDistrict" options={bdDistricts} placeholder="Search district" disabled={locked} onValueChange={(v) => updateGuarantor("permanentDistrict", v)} />
+                              <FormInput label="Permanent Post Code" disabled={locked} value={currentGuarantor.permanentPostCode} onChange={(e) => updateGuarantor("permanentPostCode", e.target.value)} />
+
+                              <SectionDivider title="CIB Information" />
+                              <FormInput label="CIB Code" placeholder="CIB code" disabled={locked} value={currentGuarantor.cibCode} onChange={(e) => updateGuarantor("cibCode", e.target.value)} />
+                              <FormInput label="Inquiry Date" type="date" disabled={locked} value={currentGuarantor.cibInquiryDate} onChange={(e) => updateGuarantor("cibInquiryDate", e.target.value)} />
+                              <FormInput label="Expiry Date" type="date" disabled={locked} value={currentGuarantor.cibExpiryDate} onChange={(e) => updateGuarantor("cibExpiryDate", e.target.value)} />
+                              <FormSelect label="Status" name="guarantorCibStatus" disabled={locked} value={currentGuarantor.cibStatus} onChange={(e) => updateGuarantor("cibStatus", e.target.value)} options={[{ value: "clean", label: "Clean" }, { value: "standard", label: "Standard" }, { value: "sma", label: "SMA" }, { value: "sub_standard", label: "Sub-Standard" }, { value: "doubtful", label: "Doubtful" }, { value: "bad_loss", label: "Bad/Loss" }]} />
+                            </>
+                          );
+                        })()}
                         <SectionDivider title="CIB Information" />
                         <FormInput label="CIB Code" placeholder="CIB code" value={currentGuarantor.cibCode} onChange={(e) => updateGuarantor("cibCode", e.target.value)} />
                         <FormInput label="Inquiry Date" type="date" value={currentGuarantor.cibInquiryDate} onChange={(e) => updateGuarantor("cibInquiryDate", e.target.value)} />
