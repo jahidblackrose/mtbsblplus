@@ -18,13 +18,27 @@ export interface CibReportData {
   // Bank / Branch
   bankName: string;
   branchName: string;
+  branchCode: string;
   inquiryDate: string;
   reference: string;
+  fiSubjectCode?: string;
+  headOfficeRef?: string;
+
+  // Loan info
+  typeOfFinancing: string;
+  creditLimit: string;
+  numberOfInstallments: string;
+  installmentAmount: string;
+  applicationType: "New" | "Renewal" | "Enhancement" | "Other";
 
   // Borrower
+  borrowerTitle?: string;
   borrowerName: string;
+  fatherTitle?: string;
   fatherName: string;
+  motherTitle?: string;
   motherName: string;
+  spouseTitle?: string;
   spouseName: string;
   gender: string;
   dateOfBirth: string;
@@ -34,9 +48,11 @@ export interface CibReportData {
   // Address
   permanentAddress: string;
   permanentDistrict: string;
+  permanentCountry: string;
   permanentPostCode: string;
   presentAddress: string;
   presentDistrict: string;
+  presentCountry: string;
   presentPostCode: string;
 
   // IDs
@@ -48,6 +64,10 @@ export interface CibReportData {
   idIssueCountry?: string;
   mobile: string;
 
+  // Sector
+  sectorType: string;
+  sectorCode?: string;
+
   // Undertaking
   applicantRole: string; // owner/partner/director/guarantor
   loanPurpose: string; // sanctioning/renewal/rescheduling
@@ -58,25 +78,34 @@ export interface CibReportData {
 // DUMMY API DATA (Mock backend response)
 // ============================================================================
 export const dummyCibApiResponse: CibReportData = {
-  bankName: "Mutual Trust Bank PLC",
-  branchName: "Corporate Head Office, Dhaka",
-  inquiryDate: new Date().toLocaleDateString("en-GB"),
-  reference: "CIB/2026/SBL-001",
+  bankName: "Mutual Trust Bank PLC.",
+  branchName: "CORPORATE HEAD OFFICE",
+  branchCode: "57",
+  inquiryDate: "1/27/2026 3:51:09 PM",
+  reference: "10628",
+
+  typeOfFinancing: "MTB Agri Loan",
+  creditLimit: "0",
+  numberOfInstallments: "60",
+  installmentAmount: "",
+  applicationType: "New",
 
   borrowerName: "MD. JAHIDUR RAHMAN",
   fatherName: "MD. FAIZUR RAHMAN",
   motherName: "ASHRUFA FAYEZ",
   spouseName: "NABILA MUSTAFY",
   gender: "Male",
-  dateOfBirth: "1989-12-05",
-  districtOfBirth: "DHAKA",
-  countryOfBirth: "BANGLADESH",
+  dateOfBirth: "05-12-1989",
+  districtOfBirth: "",
+  countryOfBirth: "BD",
 
-  permanentAddress: "H-8/10, ROAD-15, SEC 10, UTTARA",
+  permanentAddress: "H-8/10, ROAD -15, SEC 10 MYMENSINGH UTTARA MYMENSINGH",
   permanentDistrict: "DHAKA",
+  permanentCountry: "Bangladesh",
   permanentPostCode: "1230",
-  presentAddress: "H-8/10, ROAD-15, SEC 10, UTTARA",
+  presentAddress: "H-8/10, ROAD -15, SEC 10 UTTARA,DHAKA UTTARA DHAKA",
   presentDistrict: "DHAKA",
+  presentCountry: "Bangladesh",
   presentPostCode: "1230",
 
   nid: "19896125211184320",
@@ -87,14 +116,17 @@ export const dummyCibApiResponse: CibReportData = {
   idIssueCountry: "BANGLADESH",
   mobile: "01913899853",
 
-  applicantRole: "Owner",
-  loanPurpose: "Sanctioning",
+  sectorType: "Private",
+  sectorCode: "",
+
+  applicantRole: "owner",
+  loanPurpose: "sanctioning",
   companies: [
     {
       serial: "01",
-      companyName: "Khan Denim Ltd",
-      mainAddress: "H-8/10, ROAD-15, SEC 10, UTTARA, DHAKA",
-      additionalAddress: "Mymensingh Branch Office",
+      companyName: "",
+      mainAddress: "",
+      additionalAddress: "",
       hasLoan: true,
       bankName: "MTB",
       branchName: "Corporate Head Office",
@@ -103,289 +135,554 @@ export const dummyCibApiResponse: CibReportData = {
 };
 
 // ============================================================================
-// MOCK API — replace with real API call
+// MOCK API
 // ============================================================================
 export async function fetchCibReportData(applicationId: string): Promise<CibReportData> {
-  // Example real call:
-  // const res = await fetch(`/api/applications/${applicationId}/cib-report`);
-  // return res.json();
   await new Promise((r) => setTimeout(r, 300));
-  return { ...dummyCibApiResponse, reference: `CIB/2026/${applicationId}` };
+  return { ...dummyCibApiResponse, reference: dummyCibApiResponse.reference };
 }
 
 // ============================================================================
-// PDF GENERATION
+// COLORS
 // ============================================================================
-const BANK_BLUE: [number, number, number] = [0, 74, 153]; // #004a99
-const LIGHT_GREY: [number, number, number] = [240, 243, 248];
+const GREEN: [number, number, number] = [154, 205, 50]; // lime/yellow-green bar
+const RED: [number, number, number] = [220, 30, 30];
+const BLACK: [number, number, number] = [0, 0, 0];
+const GREY_LINE: [number, number, number] = [120, 120, 120];
 
-function drawHeader(doc: jsPDF, title: string, data: CibReportData, pageW: number, margin: number) {
-  // Border around full page
-  doc.setDrawColor(...BANK_BLUE);
-  doc.setLineWidth(0.6);
-  doc.rect(margin - 4, 8, pageW - (margin - 4) * 2, doc.internal.pageSize.getHeight() - 16);
-
-  // Logo placeholder (left)
-  doc.setDrawColor(...BANK_BLUE);
-  doc.setLineWidth(0.3);
-  doc.rect(margin, 14, 24, 14);
-  doc.setFontSize(7);
-  doc.setTextColor(...BANK_BLUE);
-  doc.text("MTB LOGO", margin + 12, 22, { align: "center" });
-
-  // Bank name + title (center)
-  doc.setFontSize(13);
-  doc.setFont("helvetica", "bold");
-  doc.setTextColor(...BANK_BLUE);
-  doc.text(data.bankName, pageW / 2, 18, { align: "center" });
-
-  doc.setFontSize(11);
-  doc.text(title, pageW / 2, 24, { align: "center" });
-
-  // Branch info (right)
-  doc.setFontSize(8);
-  doc.setFont("helvetica", "normal");
-  doc.setTextColor(60, 60, 60);
-  const rightX = pageW - margin;
-  doc.text(`Branch: ${data.branchName}`, rightX, 16, { align: "right" });
-  doc.text(`Date: ${data.inquiryDate}`, rightX, 20, { align: "right" });
-  doc.text(`Ref: ${data.reference}`, rightX, 24, { align: "right" });
-
-  // Divider under header
-  doc.setDrawColor(...BANK_BLUE);
-  doc.setLineWidth(0.4);
-  doc.line(margin, 32, pageW - margin, 32);
-}
-
-function drawSectionTitle(doc: jsPDF, text: string, y: number, margin: number, pageW: number): number {
-  doc.setFillColor(...BANK_BLUE);
-  doc.rect(margin, y, pageW - margin * 2, 6, "F");
-  doc.setFontSize(10);
-  doc.setFont("helvetica", "bold");
-  doc.setTextColor(255, 255, 255);
-  doc.text(text, margin + 2, y + 4.2);
-  return y + 9;
-}
-
-function drawFooter(doc: jsPDF, pageNum: number, totalPages: number, pageW: number, pageH: number) {
-  doc.setFontSize(7);
-  doc.setTextColor(120, 120, 120);
-  doc.setFont("helvetica", "normal");
-  doc.text(
-    "This is a system-generated document. Confidential — for internal bank use only.",
-    pageW / 2,
-    pageH - 5,
-    { align: "center" },
-  );
-  doc.text(`Page ${pageNum} of ${totalPages}`, pageW - 18, pageH - 5);
-}
-
-// ----------- PAGE 1: CIB INQUIRY FORM -----------
-function buildCibInquiryPage(doc: jsPDF, data: CibReportData) {
+// ============================================================================
+// PAGE 1 — CIB INQUIRY FORM
+// ============================================================================
+function buildCibInquiryPage(doc: jsPDF, d: CibReportData) {
   const pageW = doc.internal.pageSize.getWidth();
-  const margin = 14;
-  drawHeader(doc, "ONLINE CIB INQUIRY FORM", data, pageW, margin);
+  const M = 12; // margin
+  const RIGHT_BOX_W = 55;
+  const rightBoxX = pageW - M - RIGHT_BOX_W;
 
-  let y = 38;
+  // ---- Header (centered title) ----
+  doc.setFont("times", "bold");
+  doc.setTextColor(...BLACK);
+  doc.setFontSize(11);
+  doc.text("Mutual Trust Bank PLC.", pageW / 2, 12, { align: "center" });
+  doc.text("ONLINE CIB INQUIRY FORM: MTB Krishi", pageW / 2, 17, { align: "center" });
+  doc.text("(TO BE FILLED IN CAPITAL LETTER/TYPE)", pageW / 2, 22, { align: "center" });
 
-  // ---- Individual Data (2-column) ----
-  y = drawSectionTitle(doc, "INDIVIDUAL DATA", y, margin, pageW);
+  // ---- Green bar (full width) ----
+  const greenBarY = 25;
+  doc.setFillColor(...GREEN);
+  doc.rect(M, greenBarY, pageW - M * 2, 6, "F");
+
+  // Subject Type label inside green bar (right)
+  doc.setFontSize(9);
+  doc.setFont("helvetica", "bold");
+  doc.setTextColor(...BLACK);
+  doc.text("Subject Type:  Individual", pageW - M - 2, greenBarY + 4, { align: "right" });
+
+  // (Please Tick) line under green bar — grey background segment on right
+  const tickY = greenBarY + 6;
+  doc.setFillColor(225, 225, 225);
+  doc.rect(rightBoxX, tickY, RIGHT_BOX_W, 5, "F");
+  doc.setTextColor(...BLACK);
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(8.5);
+  doc.text("(Please Tick ✔ )", pageW - M - 2, tickY + 3.6, { align: "right" });
+
+  // ---- Top fields (left col) + numbered options (right col) ----
+  let y = tickY + 9;
+  const labelX = M + 1;
+
+  // Helper for red label + black value
+  const redLabel = (label: string, value: string, ly: number) => {
+    doc.setTextColor(...RED);
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(9);
+    doc.text(label, labelX, ly);
+    const labelW = doc.getTextWidth(label);
+    doc.setTextColor(...BLACK);
+    doc.text(" " + value, labelX + labelW, ly);
+  };
+
+  redLabel("*Type of Financing:", d.typeOfFinancing, y);
+
+  // Numbered options (right side)
+  doc.setTextColor(...RED);
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(9);
+  const optX = rightBoxX + 4;
+  doc.text("1.  New", optX, y);
+  doc.text("2.  Renewal", optX, y + 5);
+  doc.text("3.  Enhancement", optX, y + 10);
+  doc.text("4.  Other", optX, y + 15);
+
+  y += 6;
+  redLabel("*Credit Limit:", d.creditLimit, y);
+  y += 6;
+
+  // Installments line (red labels, black numbers)
+  doc.setTextColor(...RED);
+  doc.setFont("helvetica", "bold");
+  doc.text("*Number of Installments:", labelX, y);
+  let xCursor = labelX + doc.getTextWidth("*Number of Installments:") + 4;
+  doc.setTextColor(...BLACK);
+  doc.text(d.numberOfInstallments + ".", xCursor, y);
+  xCursor += 18;
+  doc.setTextColor(...RED);
+  doc.text("Installment Amount:", xCursor, y);
+  xCursor += doc.getTextWidth("Installment Amount:") + 4;
+  doc.setTextColor(...BLACK);
+  doc.text(d.installmentAmount || ".", xCursor, y);
+
+  y += 5;
+  doc.setTextColor(...RED);
+  doc.setFont("helvetica", "bold");
+  doc.text("[For Term loan ]", labelX, y);
+
+  // ---- Horizontal divider ----
+  y += 4;
+  doc.setDrawColor(...BLACK);
+  doc.setLineWidth(0.3);
+  doc.line(M, y, pageW - M, y);
+  y += 5;
+
+  // ---- Branch info (two cols) ----
+  doc.setFont("helvetica", "normal");
+  doc.setFontSize(9);
+  doc.setTextColor(...BLACK);
+  const col2X = pageW / 2 + 10;
+
+  doc.text("Name of the Branch", labelX, y);
+  doc.text(":", labelX + 50, y);
+  doc.text(d.branchName, labelX + 53, y);
+  doc.text("BRANCH CODE", col2X, y);
+  doc.text(d.branchCode, col2X + 35, y);
+  y += 5;
+
+  doc.text("Reference no.(s) of the branch", labelX, y);
+  doc.text(":" + d.reference, labelX + 50, y);
+  doc.text("Date", col2X, y);
+  doc.text(": " + d.inquiryDate, col2X + 35, y);
+  y += 5;
+
+  doc.setTextColor(...RED);
+  doc.setFont("helvetica", "bold");
+  doc.text("*FI Subject Code (CRM/CIF No.) for Existing Client:", labelX, y);
+  doc.setTextColor(...BLACK);
+  doc.setFont("helvetica", "normal");
+  doc.text(" " + ".".repeat(50), labelX + 80, y);
+  y += 5;
+
+  doc.text("Reference no.(s) of the Head Office", labelX, y);
+  doc.text(": " + ".".repeat(50), labelX + 50, y);
+  y += 6;
+
+  // ---- (TO BE FILLED IN CAPITAL LETTER/TYPE) red center ----
+  doc.setTextColor(...RED);
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(10);
+  doc.text("(TO BE FILLED IN CAPITAL LETTER/TYPE)", pageW / 2, y, { align: "center" });
+  y += 3;
+
+  // ---- Section: Individual Data ----
+  y = greenSection(doc, "Individual Data:", y, M, pageW);
+
+  // Name rows: title + value column
+  const titleColX = labelX;
+  const titleColW = 65;
+  const nameColX = labelX + 80;
+
+  const nameRow = (boldLabel: string, titleLabel: string, name: string, ly: number, mandatory = true) => {
+    doc.setTextColor(...(mandatory ? RED : BLACK));
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(9);
+    doc.text(boldLabel, titleColX, ly);
+    doc.setFont("helvetica", "normal");
+    doc.setTextColor(...BLACK);
+    doc.text(titleLabel, titleColX, ly + 4);
+    doc.text(": " + ".".repeat(20), titleColX + 38, ly + 4);
+    doc.setTextColor(...(mandatory ? RED : BLACK));
+    doc.setFont("helvetica", "bold");
+    doc.text(mandatory ? "*Name:" : "Name:", nameColX, ly + 4);
+    doc.setTextColor(...BLACK);
+    doc.setFont("helvetica", "normal");
+    doc.text(" " + name, nameColX + (mandatory ? 14 : 12), ly + 4);
+  };
+
+  nameRow("*Name of the borrower:", "Title(MD, HAJEE, etc)", d.borrowerName, y);
+  y += 9;
+  nameRow("*Father's Name:", "Title (LATE,MD, HAJEE, etc)", d.fatherName, y);
+  y += 9;
+  nameRow("*Mother's Name:", "Title (LATE,MD, HAJEE, etc)", d.motherName, y);
+  y += 9;
+  nameRow("Spouse's Name:", "Title (LATE,MD, HAJEE, etc)", d.spouseName, y, false);
+  y += 9;
+
+  // ---- Section: Address ----
+  y = greenSection(doc, "* Address:", y, M, pageW);
+
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(9);
+  doc.setTextColor(...RED);
+  doc.text("*Permanent/Main Address:", labelX, y);
+  doc.setTextColor(...BLACK);
+  doc.setFont("helvetica", "normal");
+  doc.text(" " + d.permanentAddress + " .", labelX + 45, y);
+  y += 5;
+
+  // District / Country / Postal
+  const triRow = (district: string, country: string, postal: string, ly: number, mandatoryCountry = true) => {
+    doc.setFont("helvetica", "bold");
+    doc.setTextColor(...RED);
+    doc.text("*District", labelX, ly);
+    doc.setTextColor(...BLACK);
+    doc.setFont("helvetica", "normal");
+    doc.text(": " + district, labelX + 18, ly);
+
+    doc.setFont("helvetica", "bold");
+    doc.setTextColor(...(mandatoryCountry ? RED : BLACK));
+    doc.text(mandatoryCountry ? "*Country" : "Country", pageW / 2 - 10, ly);
+    doc.setTextColor(...BLACK);
+    doc.setFont("helvetica", "normal");
+    doc.text(": " + country + ".", pageW / 2 + 8, ly);
+
+    doc.setFont("helvetica", "bold");
+    doc.setTextColor(...RED);
+    doc.text("*Postal Code", pageW - M - 45, ly);
+    doc.setTextColor(...BLACK);
+    doc.setFont("helvetica", "normal");
+    doc.text(": " + postal, pageW - M - 20, ly);
+  };
+
+  triRow(d.permanentDistrict, d.permanentCountry, d.permanentPostCode, y);
+  y += 5;
+
+  doc.setFont("helvetica", "bold");
+  doc.setTextColor(...RED);
+  doc.text("*Present/ Additional Address:", labelX, y);
+  doc.setTextColor(...BLACK);
+  doc.setFont("helvetica", "normal");
+  doc.text(" " + d.presentAddress + ",", labelX + 50, y);
+  y += 5;
+  triRow(d.presentDistrict, d.presentCountry, d.presentPostCode, y, false);
+  y += 6;
+
+  // ---- Section: Identification Document Data ----
+  y = greenSection(doc, "Identification Document Data:", y, M, pageW);
+
+  doc.setFont("helvetica", "bold");
+  doc.setTextColor(...RED);
+  doc.text("*National ID No.", labelX, y);
+  doc.setFont("helvetica", "normal");
+  doc.setTextColor(...BLACK);
+  doc.text(": " + d.nid + ".", labelX + 32, y);
+  doc.setFont("helvetica", "normal");
+  doc.text("TIN", pageW / 2 + 30, y);
+  doc.text(":" + d.tin + ".", pageW / 2 + 40, y);
+  y += 5;
+
+  doc.setFont("helvetica", "bold");
+  doc.setTextColor(...RED);
+  doc.text("* Date of Birth", labelX, y);
+  doc.setFont("helvetica", "normal");
+  doc.setTextColor(...BLACK);
+  doc.text(": " + d.dateOfBirth + ".", labelX + 32, y);
+  doc.setFont("helvetica", "bold");
+  doc.setTextColor(...RED);
+  doc.text("*Gender", pageW / 2 + 30, y);
+  doc.setFont("helvetica", "normal");
+  doc.setTextColor(...BLACK);
+  doc.text(": " + d.gender, pageW / 2 + 50, y);
+  y += 5;
+
+  doc.setFont("helvetica", "bold");
+  doc.setTextColor(...RED);
+  doc.text("*District of Birth", labelX, y);
+  doc.setFont("helvetica", "normal");
+  doc.setTextColor(...BLACK);
+  doc.text(": " + (d.districtOfBirth || "."), labelX + 32, y);
+  doc.setFont("helvetica", "bold");
+  doc.setTextColor(...RED);
+  doc.text("*Country of Birth", pageW / 2 + 30, y);
+  doc.setFont("helvetica", "normal");
+  doc.setTextColor(...BLACK);
+  doc.text(": " + d.countryOfBirth + ".", pageW / 2 + 60, y);
+  y += 5;
+
+  doc.setFont("helvetica", "normal");
+  doc.setTextColor(...BLACK);
+  doc.text("Telephone No", labelX, y);
+  doc.text(": " + d.mobile, labelX + 32, y);
+  y += 6;
+
+  // ---- Section: Sector Data ----
+  y = greenSection(doc, "Sector Data:", y, M, pageW);
+  doc.setFont("helvetica", "normal");
+  doc.setTextColor(...BLACK);
+  doc.text("Sector Type", labelX, y);
+  doc.text(": " + d.sectorType, labelX + 32, y);
+  doc.text("Sector Code", pageW - M - 50, y);
+  doc.text(": " + (d.sectorCode || "."), pageW - M - 20, y);
+  y += 8;
+
+  // ---- Statement (a / b) ----
+  doc.setFont("helvetica", "normal");
+  doc.setTextColor(...RED);
+  doc.text("*", labelX, y);
+  doc.setTextColor(...BLACK);
+  doc.text("To the best of our knowledge the above owner:", labelX + 3, y);
+  y += 5;
+  doc.text("a.   Obtained credit facilities in individual name:", labelX + 6, y);
+  doc.setFont("helvetica", "bold");
+  doc.setTextColor(...RED);
+  doc.text("Yes", labelX + 80, y);
+  doc.setTextColor(...BLACK);
+  doc.text(" ✔", labelX + 89, y);
+  y += 5;
+  doc.setFont("helvetica", "normal");
+  doc.text("b.   Has got other business which obtained credit facilities from the banks/financial Institution as mentioned below:", labelX + 6, y);
+  y += 4;
+
+  // ---- Banks table ----
   autoTable(doc, {
     startY: y,
-    margin: { left: margin, right: margin },
-    body: [
-      ["Borrower Name", data.borrowerName, "Father's Name", data.fatherName],
-      ["Mother's Name", data.motherName, "Spouse's Name", data.spouseName],
-      ["Gender", data.gender, "Date of Birth", data.dateOfBirth],
-      ["District of Birth", data.districtOfBirth, "Country of Birth", data.countryOfBirth],
-      ["Mobile No.", data.mobile, "Applicant Role", data.applicantRole],
-    ],
+    margin: { left: M, right: M },
+    head: [["Sl No", "Name of the Banks/Financial Institutions", "Name of the Branch with District"]],
+    body: [["1", "", ""]],
     theme: "grid",
-    styles: { fontSize: 9, cellPadding: 2 },
+    styles: { fontSize: 9, cellPadding: 2, textColor: BLACK, lineColor: GREY_LINE, lineWidth: 0.2 },
+    headStyles: { fillColor: [245, 245, 245], textColor: BLACK, fontStyle: "bold", lineColor: GREY_LINE, lineWidth: 0.2 },
     columnStyles: {
-      0: { fontStyle: "bold", fillColor: LIGHT_GREY, cellWidth: 35 },
-      1: { cellWidth: 55 },
-      2: { fontStyle: "bold", fillColor: LIGHT_GREY, cellWidth: 35 },
-      3: { cellWidth: "auto" },
+      0: { cellWidth: 18 },
+      1: { cellWidth: 80 },
     },
-  });
-  y = (doc as any).lastAutoTable.finalY + 5;
-
-  // ---- Address ----
-  y = drawSectionTitle(doc, "ADDRESS DETAILS", y, margin, pageW);
-  autoTable(doc, {
-    startY: y,
-    margin: { left: margin, right: margin },
-    head: [["Type", "Address", "District", "Post Code"]],
-    body: [
-      ["Permanent", data.permanentAddress, data.permanentDistrict, data.permanentPostCode],
-      ["Present", data.presentAddress, data.presentDistrict, data.presentPostCode],
-    ],
-    theme: "grid",
-    styles: { fontSize: 9, cellPadding: 2 },
-    headStyles: { fillColor: BANK_BLUE, textColor: 255, fontStyle: "bold" },
-    columnStyles: {
-      0: { fontStyle: "bold", cellWidth: 25 },
-      2: { cellWidth: 30 },
-      3: { cellWidth: 25 },
-    },
-  });
-  y = (doc as any).lastAutoTable.finalY + 5;
-
-  // ---- Identification Documents ----
-  y = drawSectionTitle(doc, "IDENTIFICATION DOCUMENT DATA", y, margin, pageW);
-  autoTable(doc, {
-    startY: y,
-    margin: { left: margin, right: margin },
-    head: [["Document", "Number", "Issue Date", "Issue Country"]],
-    body: [
-      ["National ID (NID)", data.nid, "—", data.idIssueCountry || "BANGLADESH"],
-      ["TIN", data.tin, "—", "BANGLADESH"],
-      ["Passport", data.passport || "N/A", data.idIssueDate || "N/A", data.idIssueCountry || "N/A"],
-      ["Driving License", data.drivingLicense || "N/A", "N/A", "N/A"],
-    ],
-    theme: "grid",
-    styles: { fontSize: 9, cellPadding: 2 },
-    headStyles: { fillColor: BANK_BLUE, textColor: 255, fontStyle: "bold" },
-    columnStyles: { 0: { fontStyle: "bold", cellWidth: 45 } },
   });
   y = (doc as any).lastAutoTable.finalY + 8;
 
-  // ---- Signatures ----
-  const pageH = doc.internal.pageSize.getHeight();
-  const sigY = pageH - 35;
-  doc.setDrawColor(120, 120, 120);
-  doc.setLineWidth(0.3);
-  doc.line(margin + 10, sigY, margin + 70, sigY);
-  doc.line(pageW - margin - 70, sigY, pageW - margin - 10, sigY);
-  doc.setFontSize(9);
-  doc.setFont("helvetica", "bold");
-  doc.setTextColor(60, 60, 60);
-  doc.text("Borrower Signature", margin + 40, sigY + 5, { align: "center" });
-  doc.text("Bank Official Seal & Signature", pageW - margin - 40, sigY + 5, { align: "center" });
+  // ---- Note + Signature block ----
+  // Signature on right
+  const sigX = pageW - M - 80;
   doc.setFont("helvetica", "normal");
-  doc.setFontSize(8);
-  doc.text(`Name: ${data.borrowerName}`, margin + 40, sigY + 10, { align: "center" });
-  doc.text(`Date: ${data.inquiryDate}`, pageW - margin - 40, sigY + 10, { align: "center" });
+  doc.setFontSize(9);
+  doc.setTextColor(...BLACK);
+  doc.text("Signature", sigX, y);
+  doc.text(":", sigX + 22, y);
+  doc.setFont("helvetica", "normal");
+  doc.text("Head of the Branch / Division", sigX + 26, y);
+  y += 5;
+  doc.text("Name", sigX, y);
+  doc.text(":", sigX + 22, y);
+  doc.text(".".repeat(40), sigX + 26, y);
+  y += 5;
+  doc.text("Seal", sigX, y);
+  doc.text(":", sigX + 22, y);
+  y += 6;
+
+  // Note (left, with line above)
+  const noteY = y - 12;
+  doc.setDrawColor(...BLACK);
+  doc.setLineWidth(0.3);
+  doc.line(M, noteY, sigX - 8, noteY);
+  doc.setFont("helvetica", "normal");
+  doc.setFontSize(8.5);
+  doc.text(
+    "Note:  Suppressing of distortion of any information (related to borrower / owner) by the bank / financial",
+    M,
+    noteY + 4,
+  );
+  doc.text("            Institution is punishable under Bangladesh Bank Order 1972, Chapter IV Art.48.", M, noteY + 8);
+
+  // Mandatory note
+  doc.setFont("helvetica", "bold");
+  doc.setTextColor(...RED);
+  doc.text("(*) indicates Mandatory fields", M, noteY + 16);
+  doc.setTextColor(...BLACK);
+  doc.text(".", M + 45, noteY + 16);
 }
 
-// ----------- PAGE 2: UNDERTAKING -----------
-function buildUndertakingPage(doc: jsPDF, data: CibReportData) {
+function greenSection(doc: jsPDF, label: string, y: number, M: number, pageW: number): number {
+  doc.setFillColor(...GREEN);
+  doc.rect(M, y, pageW - M * 2, 5, "F");
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(9.5);
+  doc.setTextColor(...BLACK);
+  doc.text(label, M + 1.5, y + 3.6);
+  return y + 8;
+}
+
+// ============================================================================
+// PAGE 2 — UNDERTAKING
+// ============================================================================
+function buildUndertakingPage(doc: jsPDF, d: CibReportData) {
   const pageW = doc.internal.pageSize.getWidth();
   const pageH = doc.internal.pageSize.getHeight();
-  const margin = 14;
-  drawHeader(doc, "UNDERTAKING — ATTACHMENT-KA", data, pageW, margin);
+  const M = 18;
+  const contentW = pageW - M * 2;
+
+  // ---- Title ----
+  doc.setFont("helvetica", "normal");
+  doc.setFontSize(12);
+  doc.setTextColor(...BLACK);
+  doc.text("UNDERTAKING", pageW / 2, 18, { align: "center" });
+
+  // Attachment-Ka top right
+  doc.setFontSize(11);
+  doc.text("Attachment-Ka", pageW - M, 28, { align: "right" });
 
   let y = 40;
 
-  // To address block
-  doc.setFontSize(10);
+  // ---- To block ----
+  doc.setFontSize(11);
   doc.setFont("helvetica", "normal");
-  doc.setTextColor(40, 40, 40);
-  doc.text("To", margin, y); y += 5;
-  doc.text("The Manager", margin, y); y += 5;
-  doc.text(data.bankName, margin, y); y += 5;
-  doc.text(data.branchName, margin, y); y += 8;
+  doc.text("To", M, y); y += 5;
+  doc.text("The Manager", M, y); y += 5;
+  doc.text(d.bankName, M, y); y += 5;
+  doc.text(d.branchName === "CORPORATE HEAD OFFICE" ? "Corporate Head Office," : d.branchName + ",", M, y); y += 5;
+  doc.text("DHAKA", M, y); y += 8;
 
-  doc.setFont("helvetica", "bold");
-  doc.text("Subject: Provision of information on the ownership of companies and their bank liabilities.", margin, y);
+  // ---- Subject ----
+  doc.text("Subject: Provision of information on the ownership of companies and their bank liabilities.", M, y);
   y += 8;
 
-  doc.setFont("helvetica", "normal");
-  doc.text("Dear Sir,", margin, y); y += 6;
+  // ---- Salutation ----
+  doc.text("Dear Sir,", M, y);
+  y += 7;
 
-  // Undertaking body
+  // ---- Body paragraph ----
   const body =
-    `I, ${data.borrowerName}, ${data.applicantRole.toLowerCase()} of am applying for ${data.loanPurpose.toLowerCase()} of a loan in my own name. ` +
-    `My father's name: ${data.fatherName}, mother's name: ${data.motherName}, spouse's name: ${data.spouseName}. ` +
-    `Permanent address: ${data.permanentAddress}, District: ${data.permanentDistrict}, Post Code: ${data.permanentPostCode}, Country: BD. ` +
-    `Present address: ${data.presentAddress}, District: ${data.presentDistrict}, Post Code: ${data.presentPostCode}. ` +
-    `Date of Birth: ${data.dateOfBirth}, District of Birth: ${data.districtOfBirth}, Country of Birth: ${data.countryOfBirth}. ` +
-    `National ID Number: ${data.nid}, TIN: ${data.tin}, Gender: ${data.gender}, Telephone: ${data.mobile}. ` +
-    `The list of companies under my ownership along with their bank liability status is given in the following table:`;
+    `I, ${d.borrowerName} ${d.applicantRole}/partner/director/guarantor of am applying for ${d.loanPurpose}/renewal/rescheduling of a loan in my own name/ aforementioned company's name. ` +
+    `My father's name: ${d.fatherName} mother's name: ${d.motherName} Husband's name(in case of married woman): ${d.spouseName}., ` +
+    `Main (Permanent)address: Village: ${d.permanentAddress}, Street Name/PS/Upazilla: UTTARA District: ${d.permanentDistrict} Postal code  country BD, ` +
+    `Additional (Business) address: Village:${d.presentAddress}, Street Name/PS/Upazilla:  District: ${d.presentDistrict} Postal code ${d.presentPostCode} country BD., ` +
+    `Date of Birth: ${d.dateOfBirth} District of Birth: ${d.districtOfBirth} Country of Birth: ${d.idIssueCountry || "BANGLADESH"}  National ID Number: ${d.nid} ` +
+    `Other ID documents(Passport/Driving licence/Nationality Certificate) : ID number……${d.passport || "N/A"}…….ID issue date……${d.idIssueDate || "N/A"}………ID issue country ${d.idIssueCountry || "BANGLADESH"}.,` +
+    `TIN: ${d.tin}, Gender: ${d.gender}, Telephone Number: ${d.mobile} are given for your kind consideration. ` +
+    `The list of companies under the ownership of mine along with their bank liability status is given in the following table:`;
 
-  doc.setFontSize(9.5);
-  const lines = doc.splitTextToSize(body, pageW - margin * 2);
-  doc.text(lines, margin, y, { align: "justify", maxWidth: pageW - margin * 2 });
-  y += lines.length * 4.6 + 4;
+  doc.setFontSize(11);
+  const lines = doc.splitTextToSize(body, contentW);
+  // justified text - simple approach
+  doc.text(lines, M, y, { align: "justify", maxWidth: contentW, lineHeightFactor: 1.5 });
+  y += lines.length * 5.5 + 4;
 
-  // Companies table
+  // ---- Companies table with merged headers ----
+  // Column widths (sum = contentW)
+  const colW = {
+    serial: 18,
+    company: 28,
+    main: 26,
+    additional: 26,
+    bankFI: 30,
+    branch: 30,
+    na: 16,
+  };
+  const totalW = Object.values(colW).reduce((a, b) => a + b, 0);
+  // Scale to contentW
+  const scale = contentW / totalW;
+  Object.keys(colW).forEach((k) => ((colW as any)[k] = (colW as any)[k] * scale));
+
   autoTable(doc, {
     startY: y,
-    margin: { left: margin, right: margin },
-    head: [["Sl.", "Company Name", "Main Address", "Additional Address", "Loan?", "Bank", "Branch"]],
-    body: data.companies.map((c) => [
+    margin: { left: M, right: M },
+    head: [
+      [
+        { content: "Serial no.", rowSpan: 3, styles: { valign: "middle", halign: "center" } },
+        { content: "Name of the Company", rowSpan: 3, styles: { valign: "middle", halign: "center" } },
+        { content: "Main Address", rowSpan: 3, styles: { valign: "middle", halign: "center" } },
+        { content: "Additional Address", rowSpan: 3, styles: { valign: "middle", halign: "center" } },
+        { content: "Whether the company is availing any loan or not", colSpan: 3, styles: { halign: "center" } },
+      ],
+      [
+        { content: "Yes", colSpan: 2, styles: { halign: "center" } },
+        { content: "N/A", rowSpan: 2, styles: { valign: "middle", halign: "center" } },
+      ],
+      [
+        { content: "Name of the bank/FI", styles: { halign: "center" } },
+        { content: "Name of the branch", styles: { halign: "center" } },
+      ],
+    ],
+    body: d.companies.map((c) => [
       c.serial,
       c.companyName,
       c.mainAddress,
       c.additionalAddress,
-      c.hasLoan ? "Yes" : "N/A",
-      c.bankName || "—",
-      c.branchName || "—",
+      c.hasLoan ? c.bankName || "" : "",
+      c.hasLoan ? c.branchName || "" : "",
+      c.hasLoan ? "" : "N/A",
     ]),
     theme: "grid",
-    styles: { fontSize: 8.5, cellPadding: 2 },
-    headStyles: { fillColor: BANK_BLUE, textColor: 255, fontStyle: "bold" },
+    styles: {
+      fontSize: 10,
+      cellPadding: 3,
+      textColor: BLACK,
+      lineColor: BLACK,
+      lineWidth: 0.3,
+      valign: "middle",
+      halign: "center",
+    },
+    headStyles: {
+      fillColor: [255, 255, 255],
+      textColor: BLACK,
+      fontStyle: "normal",
+      lineColor: BLACK,
+      lineWidth: 0.3,
+    },
     columnStyles: {
-      0: { cellWidth: 10, halign: "center" },
-      4: { cellWidth: 14, halign: "center" },
+      0: { cellWidth: colW.serial },
+      1: { cellWidth: colW.company },
+      2: { cellWidth: colW.main },
+      3: { cellWidth: colW.additional },
+      4: { cellWidth: colW.bankFI },
+      5: { cellWidth: colW.branch },
+      6: { cellWidth: colW.na },
     },
   });
   y = (doc as any).lastAutoTable.finalY + 6;
 
-  // Declaration
-  doc.setFontSize(9.5);
-  doc.setFont("helvetica", "italic");
-  doc.setTextColor(40, 40, 40);
-  const decl =
-    "I hereby declare that the information provided is true and correct to the best of my knowledge. " +
-    "Apart from stated above, if any liability in my own name or my company's name is found, I will be bound to obey any decision " +
-    "made by the authority concerned relating to sanctioning/renewal/rescheduling of the loan applied for and I will be punishable " +
-    "by law for providing this false or fabricated information.";
-  const declLines = doc.splitTextToSize(decl, pageW - margin * 2);
-  doc.text(declLines, margin, y);
-  y += declLines.length * 4.6 + 6;
-
-  // Horizontal separator
-  doc.setDrawColor(...BANK_BLUE);
-  doc.setLineWidth(0.3);
-  doc.line(margin, y, pageW - margin, y);
-  y += 8;
-
-  // Signatures
-  const sigY = pageH - 35;
-  doc.setDrawColor(120, 120, 120);
-  doc.line(margin + 10, sigY, margin + 80, sigY);
-  doc.line(pageW - margin - 80, sigY, pageW - margin - 10, sigY);
-  doc.setFontSize(9);
-  doc.setFont("helvetica", "bold");
-  doc.setTextColor(60, 60, 60);
-  doc.text("Seal & Signature of Bank Official", margin + 45, sigY + 5, { align: "center" });
-  doc.text("Customer's Signature", pageW - margin - 45, sigY + 5, { align: "center" });
+  // ---- Closing paragraph ----
   doc.setFont("helvetica", "normal");
-  doc.setFontSize(8);
-  doc.text("(Who certified the borrower)", margin + 45, sigY + 10, { align: "center" });
-  doc.text(`Name: ${data.borrowerName}`, pageW - margin - 45, sigY + 10, { align: "center" });
+  doc.setFontSize(11);
+  const closing =
+    "Apart from stated above, if any liability in my own name or my company's name is found, I will be bound to obey any decision made by the authority concerned relating to sanctioning/renewal/rescheduling of the loan applied for and I will be punishable by law for providing this false or fabricated information.";
+  const closingLines = doc.splitTextToSize(closing, contentW);
+  doc.text(closingLines, M, y, { lineHeightFactor: 1.5 });
+  y += closingLines.length * 5.5 + 8;
+
+  // ---- Signature box (2 columns) ----
+  const boxH = 36;
+  const colWidth = contentW / 2;
+  doc.setDrawColor(...BLACK);
+  doc.setLineWidth(0.3);
+  // Outer rect
+  doc.rect(M, y, contentW, boxH);
+  // Divider
+  doc.line(M + colWidth, y, M + colWidth, y + boxH);
+
+  // Left cell text
+  doc.setFontSize(11);
+  const leftText = doc.splitTextToSize(
+    "Seal and Signature of the bank official  who certified the borrower",
+    colWidth - 6,
+  );
+  doc.text(leftText, M + 3, y + 8);
+
+  // Right cell text
+  let ry = y + 6;
+  doc.text("Customer's Signature:", M + colWidth + 3, ry); ry += 8;
+  doc.setFont("helvetica", "normal");
+  doc.text("Name:", M + colWidth + 3, ry);
+  doc.setFont("helvetica", "bold");
+  doc.text(d.borrowerName, M + colWidth + 15, ry);
+  doc.setFont("helvetica", "normal");
+  ry += 8;
+  doc.text("Name of the Borrowing organization", M + colWidth + 3, ry);
 }
 
+// ============================================================================
+// MAIN
+// ============================================================================
 export function generateCibReportPdf(data: CibReportData) {
   const doc = new jsPDF("p", "mm", "a4");
-
-  // Page 1: CIB Inquiry Form
   buildCibInquiryPage(doc, data);
-
-  // Page 2: Undertaking
   doc.addPage();
   buildUndertakingPage(doc, data);
-
-  // Footers
-  const pageW = doc.internal.pageSize.getWidth();
-  const pageH = doc.internal.pageSize.getHeight();
-  const total = doc.getNumberOfPages();
-  for (let i = 1; i <= total; i++) {
-    doc.setPage(i);
-    drawFooter(doc, i, total, pageW, pageH);
-  }
-
   doc.save(`CIB_Report_${data.borrowerName.replace(/\s+/g, "_")}.pdf`);
 }
