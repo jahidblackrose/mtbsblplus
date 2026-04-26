@@ -257,7 +257,37 @@ const ApplicationForm: React.FC = () => {
   const updatePremise = (f: keyof PremiseOwnershipRecord, v: string) => setCurrentPremise((p) => ({ ...p, [f]: v }));
   const updateOtherBiz = (f: keyof OtherBusinessInformation, v: string) => setOtherBiz((p) => ({ ...p, [f]: v }));
   const updateSister = (f: keyof SisterAlliedConcernRecord, v: string) => setCurrentSister((p) => ({ ...p, [f]: v }));
-  const updateGuarantor = (f: keyof PersonalGuarantor, v: string) => setCurrentGuarantor((p) => ({ ...p, [f]: v }));
+  const updateGuarantor = (f: keyof PersonalGuarantor, v: string) => {
+    setCurrentGuarantor((p) => ({ ...p, [f]: v }));
+    if (f === "name" || f === "nid" || f === "dob") {
+      setGuarantorVerifyStatus("idle");
+      setGuarantorVerifyMessage("");
+    }
+  };
+
+  const handleVerifyGuarantor = async () => {
+    const { name, nid, dob } = currentGuarantor;
+    if (!name.trim() || !nid.trim() || !dob.trim()) {
+      setGuarantorVerifyStatus("error");
+      setGuarantorVerifyMessage("Please provide Name, NID and Date of Birth before verifying.");
+      toast.error("Name, NID and Date of Birth are required");
+      return;
+    }
+    setGuarantorVerifyStatus("loading");
+    setGuarantorVerifyMessage("");
+    // Mock verification API — NID must be 10/13/17 digits
+    await new Promise((r) => setTimeout(r, 900));
+    const isValidNid = /^(\d{10}|\d{13}|\d{17})$/.test(nid.trim());
+    if (isValidNid) {
+      setGuarantorVerifyStatus("success");
+      setGuarantorVerifyMessage(`Verified successfully against NID ${nid}. You may now fill in the remaining details.`);
+      toast.success("Guarantor verified");
+    } else {
+      setGuarantorVerifyStatus("error");
+      setGuarantorVerifyMessage("Verification failed. NID does not match the provided Name & DOB.");
+      toast.error("Verification failed");
+    }
+  };
 
   return (
     <AppLayout>
