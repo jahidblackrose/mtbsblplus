@@ -909,6 +909,8 @@ const ApplicationForm: React.FC = () => {
                                     onClick={() => {
                                       setCurrentGuarantor({ ...g });
                                       setEditingGuarantorIndex(i);
+                                      setGuarantorVerifyStatus("success");
+                                      setGuarantorVerifyMessage(`Previously verified for NID ${g.nid || "—"}`);
                                       toast.info("Editing guarantor — update fields and click Update");
                                     }}
                                   >
