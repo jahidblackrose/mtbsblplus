@@ -187,6 +187,8 @@ const ApplicationForm: React.FC = () => {
   const [currentGuarantor, setCurrentGuarantor] = useState<PersonalGuarantor>({ ...emptyGuarantor });
   const [guarantors, setGuarantors] = useState<PersonalGuarantor[]>([]);
   const [editingGuarantorIndex, setEditingGuarantorIndex] = useState<number | null>(null);
+  const [guarantorVerifyStatus, setGuarantorVerifyStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
+  const [guarantorVerifyMessage, setGuarantorVerifyMessage] = useState<string>("");
   const [amlCft, setAmlCft] = useState<AmlCftDeclarationRow[]>([
     { serialNo: 1, declaration: "CDD has been completed during account opening of the customer", status: "yes", remarks: "" },
     { serialNo: 2, declaration: "All necessary documents in establishing the clients legitimacy have been obtained", status: "yes", remarks: "" },
