@@ -836,6 +836,8 @@ const ApplicationForm: React.FC = () => {
                             onClick={() => {
                               setCurrentGuarantor({ ...emptyGuarantor });
                               setEditingGuarantorIndex(null);
+                              setGuarantorVerifyStatus("idle");
+                              setGuarantorVerifyMessage("");
                             }}
                           >
                             Cancel
