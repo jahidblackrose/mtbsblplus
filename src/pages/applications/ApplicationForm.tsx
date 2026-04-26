@@ -852,6 +852,10 @@ const ApplicationForm: React.FC = () => {
                               toast.warning("Enter at least Name or NID before saving");
                               return;
                             }
+                            if (guarantorVerifyStatus !== "success") {
+                              toast.warning("Please verify Name, NID & DOB before saving the guarantor");
+                              return;
+                            }
                             if (editingGuarantorIndex !== null) {
                               setGuarantors((p) => p.map((g, i) => (i === editingGuarantorIndex ? currentGuarantor : g)));
                               toast.success("Guarantor updated");
@@ -861,6 +865,8 @@ const ApplicationForm: React.FC = () => {
                               toast.success("Guarantor added");
                             }
                             setCurrentGuarantor({ ...emptyGuarantor });
+                            setGuarantorVerifyStatus("idle");
+                            setGuarantorVerifyMessage("");
                           }}
                         >
                           {editingGuarantorIndex !== null ? "Update Guarantor" : "Add Guarantor"}
