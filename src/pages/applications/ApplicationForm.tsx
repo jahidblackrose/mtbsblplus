@@ -6,6 +6,7 @@ import { FormInput, FormSelect, FormTextarea } from "@/components/common/FormCon
 import { SearchableSelect } from "@/components/common/SearchableSelect";
 import { DataTable, Td } from "@/components/common/DataTable";
 import { Button } from "@/components/ui/button";
+import { CheckCircle2, XCircle, Loader2, ShieldCheck } from "lucide-react";
 
 /* ─── Types ─── */
 interface LoanExposure {
