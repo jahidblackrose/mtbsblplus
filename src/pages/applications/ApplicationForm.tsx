@@ -926,6 +926,8 @@ const ApplicationForm: React.FC = () => {
                                       if (editingGuarantorIndex === i) {
                                         setCurrentGuarantor({ ...emptyGuarantor });
                                         setEditingGuarantorIndex(null);
+                                        setGuarantorVerifyStatus("idle");
+                                        setGuarantorVerifyMessage("");
                                       }
                                       toast.success("Guarantor removed");
                                     }}
