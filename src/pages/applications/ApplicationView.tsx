@@ -2,8 +2,11 @@ import { useParams, Link } from "react-router-dom";
 import AppLayout from "@/components/layout/AppLayout";
 import { PageHeader, StatusBadge } from "@/components/common/PageComponents";
 import { Button } from "@/components/ui/button";
-import { FileDown } from "lucide-react";
+import { FileDown, FileText, Loader2 } from "lucide-react";
 import { generateApplicationPdf } from "@/utils/generateApplicationPdf";
+import { fetchCibReportData, generateCibReportPdf } from "@/utils/generateCibReportPdf";
+import { useState } from "react";
+import { toast } from "@/hooks/use-toast";
 
 const demoApp = {
   id: "SBL-2026-001",
