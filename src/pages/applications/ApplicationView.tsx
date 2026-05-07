@@ -84,6 +84,10 @@ export default function ApplicationView() {
         <Button size="sm" variant="outline" onClick={() => generateApplicationPdf(demoApp)}>
           <FileDown size={14} className="mr-1.5" /> Download PDF
         </Button>
+        <Button size="sm" variant="outline" onClick={handleProposalDownload} disabled={propLoading}>
+          {propLoading ? <Loader2 size={14} className="mr-1.5 animate-spin" /> : <FileSpreadsheet size={14} className="mr-1.5" />}
+          Download Proposal
+        </Button>
         <Button size="sm" variant="outline" onClick={handleCibDownload} disabled={cibLoading}>
           {cibLoading ? <Loader2 size={14} className="mr-1.5 animate-spin" /> : <FileText size={14} className="mr-1.5" />}
           CIB Report
