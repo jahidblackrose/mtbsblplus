@@ -2,9 +2,10 @@ import { useParams, Link } from "react-router-dom";
 import AppLayout from "@/components/layout/AppLayout";
 import { PageHeader, StatusBadge } from "@/components/common/PageComponents";
 import { Button } from "@/components/ui/button";
-import { FileDown, FileText, Loader2 } from "lucide-react";
+import { FileDown, FileText, Loader2, FileSpreadsheet } from "lucide-react";
 import { generateApplicationPdf } from "@/utils/generateApplicationPdf";
 import { fetchCibReportData, generateCibReportPdf } from "@/utils/generateCibReportPdf";
+import { fetchProposalData, generateProposalPdf } from "@/utils/generateProposalPdf";
 import { useState } from "react";
 import { toast } from "@/hooks/use-toast";
 
@@ -31,6 +32,20 @@ const demoApp = {
 export default function ApplicationView() {
   const { id } = useParams();
   const [cibLoading, setCibLoading] = useState(false);
+  const [propLoading, setPropLoading] = useState(false);
+
+  const handleProposalDownload = async () => {
+    try {
+      setPropLoading(true);
+      const data = await fetchProposalData(id || demoApp.id);
+      generateProposalPdf(data);
+      toast({ title: "Proposal generated", description: "RM Memo PDF downloaded." });
+    } catch (e) {
+      toast({ title: "Failed to generate Proposal", description: String(e), variant: "destructive" });
+    } finally {
+      setPropLoading(false);
+    }
+  };
 
   const handleCibDownload = async () => {
     try {
@@ -68,6 +83,10 @@ export default function ApplicationView() {
         <Link to="/applications"><Button variant="outline" size="sm">← Back to List</Button></Link>
         <Button size="sm" variant="outline" onClick={() => generateApplicationPdf(demoApp)}>
           <FileDown size={14} className="mr-1.5" /> Download PDF
+        </Button>
+        <Button size="sm" variant="outline" onClick={handleProposalDownload} disabled={propLoading}>
+          {propLoading ? <Loader2 size={14} className="mr-1.5 animate-spin" /> : <FileSpreadsheet size={14} className="mr-1.5" />}
+          Download Proposal
         </Button>
         <Button size="sm" variant="outline" onClick={handleCibDownload} disabled={cibLoading}>
           {cibLoading ? <Loader2 size={14} className="mr-1.5 animate-spin" /> : <FileText size={14} className="mr-1.5" />}
